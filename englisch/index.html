@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Englisch-Schulaufgabe Unit 1</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+/* Layout: eine Spalte wie ein Übungsheft; grüne Linie oben, gelber Textmarker für Lücken */
+:root{
+  --paper:#f4f7f3; --card:#ffffff; --ink:#16302b; --muted:#5b6f6a; --line:#d5e0db;
+  --green:#1f8a5b; --green-ink:#ffffff; --marker:#ffe36e; --marker-ink:#3a3200;
+  --ok:#17794b; --ok-bg:#dff3e7; --bad:#b3372e; --bad-bg:#fbe4e1; --soft:#e8f0ec;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1b18; --card:#182823; --ink:#e8f1ed; --muted:#9db3ac; --line:#2c423b;
+    --green:#3fbf86; --green-ink:#062216; --marker:#e9c93d; --marker-ink:#1f1a00;
+    --ok:#6fdca6; --ok-bg:#173b2b; --bad:#ff9a8f; --bad-bg:#472320; --soft:#20342e;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1b18; --card:#182823; --ink:#e8f1ed; --muted:#9db3ac; --line:#2c423b;
+  --green:#3fbf86; --green-ink:#062216; --marker:#e9c93d; --marker-ink:#1f1a00;
+  --ok:#6fdca6; --ok-bg:#173b2b; --bad:#ff9a8f; --bad-bg:#472320; --soft:#20342e;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 64px}
+header.top{border-top:8px solid var(--green);padding:18px 0 6px;display:flex;gap:12px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:1.7rem;line-height:1.1;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-size:1.25rem;margin:26px 0 10px}
+.sub{color:var(--muted);font-size:.95rem;margin:2px 0 0}
+.count{font-family:var(--display);background:var(--marker);color:var(--marker-ink);padding:2px 12px;border-radius:999px;white-space:nowrap}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.tile{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:4px;min-height:92px}
+.tile:hover{border-color:var(--green)}
+.tile .code{font-family:var(--display);color:var(--green);font-size:.9rem;display:flex;justify-content:space-between;gap:8px}
+.tile .tt{font-weight:700;line-height:1.2}
+.tile .ts{color:var(--muted);font-size:.85rem}
+.badge{font-family:var(--body);font-size:.8rem;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.badge.done{background:var(--ok-bg);color:var(--ok)}
+.tile.wide{grid-column:1/-1;background:var(--green);color:var(--green-ink);border-color:var(--green);min-height:0}
+.tile.wide .code,.tile.wide .ts{color:var(--green-ink)}
+.bar{display:flex;align-items:center;gap:12px;padding:14px 0 4px}
+.back{background:none;border:1.5px solid var(--line);border-radius:999px;padding:6px 14px}
+.prog{flex:1;height:10px;background:var(--soft);border-radius:999px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--green);width:0;transition:width .25s}
+@media (prefers-reduced-motion: reduce){.prog i{transition:none}}
+.pn{color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rule{background:var(--soft);border-left:5px solid var(--green);border-radius:8px;padding:10px 14px;font-size:.95rem;margin:10px 0}
+.rule u{text-decoration:none;background:var(--marker);color:var(--marker-ink);padding:0 3px;border-radius:3px}
+details.rule summary{cursor:pointer;font-weight:700}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:20px 18px;margin-top:12px}
+.q{font-size:1.3rem;line-height:1.4;margin:0 0 16px;overflow-wrap:anywhere}
+.gap{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--ink);background:var(--marker);color:var(--marker-ink);border-radius:4px 4px 0 0;padding:0 6px;text-align:center;font-weight:700}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:12px 16px;text-align:left;font-size:1.1rem}
+.opt:hover:not(:disabled){border-color:var(--green)}
+.opt.right{background:var(--ok-bg);border-color:var(--ok);color:var(--ok);font-weight:700}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input.ans,textarea.ans{flex:1;min-width:0;width:100%;font:inherit;font-size:1.2rem;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:12px 14px}
+textarea.ans{min-height:130px;resize:vertical}
+.btn{background:var(--green);color:var(--green-ink);border:0;border-radius:12px;padding:12px 20px;font-weight:700}
+.btn.ghost{background:none;color:var(--ink);border:1.5px solid var(--line);font-weight:400}
+.fb{margin-top:16px;border-radius:12px;padding:12px 14px}
+.fb.ok{background:var(--ok-bg);color:var(--ok)}
+.fb.no{background:var(--bad-bg);color:var(--bad)}
+.fb b.big{font-family:var(--display);font-size:1.15rem;display:block}
+.fb .sol{color:var(--ink);font-size:1.15rem;font-weight:700;display:block;margin:4px 0}
+.fb .why{color:var(--ink);font-size:.95rem;display:block}
+.next{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:.9rem;margin:8px 0 0}
+.mail{background:var(--paper);border:1.5px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:1.05rem}
+.player{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.player p{margin:0;flex-basis:100%;color:var(--muted);font-size:.9rem}
+.script{flex-basis:100%;font-size:1.05rem}
+.result{text-align:center;padding:30px 18px}
+.result .num{font-family:var(--display);font-size:3.2rem;line-height:1;color:var(--green)}
+.result .next{justify-content:center}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.miss{text-align:left;margin:16px auto 0;max-width:520px;font-size:.95rem}
+.miss li{margin:4px 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Englisch-Schulaufgabe Unit 1</h1>
+      <p class="sub"><a href="../" style="color:inherit">← uebmal.de</a> · Green Line 1 · Pick-up A und Unit 1 · Grammar, Vocabulary, Writing, Listening</p>
+    </div>
+    <span class="count" id="countdown"></span>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+/* Inhalte: Green Line 1 Bayern, Unit 1 + Pick-up A – eigene Übungssätze */
+const mc = (q, o, why) => ({ t: "mc", q, o, why });
+const inp = (q, a, why, opt) => Object.assign({ t: "in", q, a, why }, opt || {});
+const self = (q, model, tip) => ({ t: "self", q, model, tip });
+const rf = (q, isTrue, why) => ({ t: "mc", q, o: isTrue ? ["Richtig", "Falsch"] : ["Falsch", "Richtig"], why, fixed: ["Richtig", "Falsch"] });
+
+const SECTIONS = [
+  {
+    id: "g1", group: "Grammar", code: "G1", title: "Nouns: singular and plural",
+    sub: "Einzahl und Mehrzahl",
+    rule: `<b>Mehrzahl = Wort + s:</b> a dog – two dog<u>s</u><br>
+      <b>y → ies:</b> a family – two famil<u>ies</u>, a hobby – two hobb<u>ies</u><br>
+      <b>Unregelmäßig:</b> a mouse – two <u>mice</u> · a shelf – two shel<u>ves</u>`,
+    items: [
+      inp("one boy – two ___", ["boys"]),
+      inp("one house – two ___", ["houses"]),
+      inp("one family – two ___", ["families"], "y wird zu ies: family – families."),
+      inp("one hobby – three ___", ["hobbies"], "y wird zu ies: hobby – hobbies."),
+      inp("one mouse – two ___", ["mice"], "Unregelmäßig: mouse – mice."),
+      inp("one shelf – two ___", ["shelves"], "Unregelmäßig: shelf – shelves."),
+      inp("one fridge – two ___", ["fridges"]),
+      inp("one wardrobe – two ___", ["wardrobes"]),
+      inp("one sentence – two ___", ["sentences"]),
+      inp("one biscuit – four ___", ["biscuits"]),
+      inp("There are three ___ in the house. (bedroom)", ["bedrooms"]),
+      inp("Jamie's ___ are everywhere. (car)", ["cars"]),
+      inp("Luke and Jamie are ___. (brother)", ["brothers"]),
+      inp("Holly's two guinea ___ are Mr Fluff and Honey. (pig)", ["pigs"]),
+      mc("Welche Mehrzahl ist richtig? one family – two …", ["families", "familys", "familyes"], "y wird zu ies."),
+      mc("Was ist die Einzahl von “mice”?", ["mouse", "mices", "mouses"], "one mouse – two mice."),
+    ],
+  },
+  {
+    id: "g2", group: "Grammar", code: "G2", title: "Personal pronouns and be",
+    sub: "I am, you are, he is …",
+    rule: `<b>I</b> am · <b>you</b> are · <b>he / she / it</b> is · <b>we / you / they</b> are<br>
+      <b>Kurzformen:</b> I'm · you're · he's · she's · it's · we're · they're<br>
+      Sachen = <b>it</b>. Tiere, die du mit Namen kennst = <b>he</b> oder <b>she</b>.`,
+    items: [
+      inp("I ___ Luke. (am / is / are)", ["am"]),
+      inp("Jamie ___ eight. (am / is / are)", ["is"]),
+      inp("Luke and Jamie ___ brothers. (am / is / are)", ["are"], "Zwei Personen = they → are."),
+      inp("We ___ from Greenwich. (am / is / are)", ["are"]),
+      inp("You ___ a nice dog, Sherlock. (am / is / are)", ["are"]),
+      inp("The house ___ small. (am / is / are)", ["is"]),
+      inp("Mr Fluff and Honey ___ guinea pigs. (am / is / are)", ["are"]),
+      inp("My sister and I ___ in the garden. (am / is / are)", ["are"], "My sister and I = we → are."),
+      mc("Irina is Luke's sister. ___ is thirteen.", ["She", "He", "They"]),
+      mc("Luke and Jamie are brothers. ___ are in the bedroom.", ["They", "We", "He"]),
+      mc("Pia and I are friends. ___ are in the park.", ["We", "They", "You"], "Pia and I = we."),
+      mc("The house is small. ___ is in Brook Lane.", ["It", "He", "They"], "Sachen = it."),
+      mc("This is Mr Elliot. ___ is Luke's father.", ["He", "She", "It"]),
+      inp("Schreibe die Kurzform: I am → ___", ["I'm"], "", { strict: true }),
+      inp("Schreibe die Kurzform: She is → ___", ["She's"], "", { strict: true }),
+      inp("Schreibe die Kurzform: They are → ___", ["They're"], "", { strict: true }),
+      inp("Schreibe die Kurzform: We are → ___", ["We're"], "", { strict: true }),
+      inp("Schreibe die Kurzform: It is → ___", ["It's"], "Mit Apostroph! its (ohne) heißt sein/ihr.", { strict: true }),
+    ],
+  },
+  {
+    id: "g3", group: "Grammar", code: "G3", title: "The negative forms of be",
+    sub: "isn't, aren't, I'm not",
+    rule: `<b>is not = isn't</b> · <b>are not = aren't</b><br>
+      Bei I geht das nicht: <b>I'm not</b> (nie „amn't“).<br>
+      This <u>isn't</u> Mr Fluff – it's Honey.`,
+    items: [
+      inp("Holly ___ five. She's eleven.", ["isn't", "is not"]),
+      inp("Mr Fluff and Honey ___ rabbits. They're guinea pigs.", ["aren't", "are not"]),
+      inp("Sherlock ___ pink.", ["isn't", "is not"]),
+      inp("The Elliots ___ from Germany.", ["aren't", "are not"], "The Elliots = they → aren't."),
+      inp("We ___ from London. We're from Greenwich.", ["aren't", "are not"]),
+      inp("Brook Lane ___ in Hamburg.", ["isn't", "is not"]),
+      inp("You ___ fourteen, Luke!", ["aren't", "are not"]),
+      inp("Luke and Jamie ___ sisters. They're brothers.", ["aren't", "are not"]),
+      inp("It ___ a big garden. It's small.", ["isn't", "is not"]),
+      mc("Welcher Satz ist richtig?", ["I'm not English.", "I amn't English.", "I aren't English."], "Bei I: I'm not."),
+      inp("Verneine: She is here. → ___", ["She isn't here.", "She is not here."]),
+      inp("Verneine: They are good friends. → ___", ["They aren't good friends.", "They are not good friends."]),
+      inp("Verneine: I am ten. → ___", ["I'm not ten.", "I am not ten."]),
+      inp("Verneine: The flat is big. → ___", ["The flat isn't big.", "The flat is not big."]),
+    ],
+  },
+  {
+    id: "g4", group: "Grammar", code: "G4", title: "Yes/No questions and short answers",
+    sub: "Is he …? – Yes, he is.",
+    rule: `<b>Frage:</b> Verb nach vorn. Luke <u>is</u> from Greenwich. → <u>Is</u> Luke from Greenwich?<br>
+      <b>Yes</b> → Langform: Yes, he <u>is</u>. (nie „Yes, he's.“)<br>
+      <b>No</b> → Kurzform: No, he <u>isn't</u>. · No, I'm not.`,
+    items: [
+      inp("Mache eine Frage: Luke is from Greenwich. → ___", ["Is Luke from Greenwich?"]),
+      inp("Mache eine Frage: They are your friends. → ___", ["Are they your friends?"]),
+      inp("Mache eine Frage: The cars are on the floor. → ___", ["Are the cars on the floor?"]),
+      inp("Mache eine Frage: It is in the bedroom. → ___", ["Is it in the bedroom?"]),
+      inp("Mache eine Frage: You are eleven. → ___", ["Are you eleven?"]),
+      inp("Mache eine Frage: Irina is your sister. → ___", ["Is Irina your sister?"]),
+      mc("Are you eleven? – Yes, ___", ["I am.", "I'm.", "you are."], "Bei Yes immer die Langform: Yes, I am."),
+      mc("Is Jamie Luke's brother? – Yes, ___", ["he is.", "he's.", "it is."], "Bei Yes immer die Langform."),
+      mc("Are Mr Fluff and Honey cats? – No, ___", ["they aren't.", "they isn't.", "it isn't."]),
+      mc("Is Irina eight? – No, ___", ["she isn't.", "she aren't.", "he isn't."]),
+      mc("Is the house big? – No, ___", ["it isn't.", "he isn't.", "it aren't."]),
+      mc("Are you and Jamie brothers, Luke? – Yes, ___", ["we are.", "you are.", "they are."], "you (ihr) → Antwort mit we."),
+      inp("Are Holly and Amber sisters? – Yes, ___ ___.", ["they are"], "Nach Yes die Langform.", { strict: true }),
+      inp("Is Anna Elliot from Poland? – Yes, ___ ___.", ["she is"], "Nach Yes die Langform.", { strict: true }),
+      inp("Is Jan Luke's brother? – No, ___ ___.", ["he isn't", "he is not"], "Jan is Luke's cousin."),
+      inp("Are the Zajacs in Greenwich? – No, ___ ___.", ["they aren't", "they are not"], "They're in Cracow."),
+    ],
+  },
+  {
+    id: "g5", group: "Grammar", code: "G5", title: "Questions with question words",
+    sub: "Where? Who? What? How old?",
+    rule: `<b>Where</b> = wo · <b>Where … from</b> = woher · <b>Who</b> = wer · <b>What</b> = was · <b>How old</b> = wie alt<br>
+      Achtung: <b>who</b> heißt <u>wer</u>, <b>where</b> heißt <u>wo</u>!<br>
+      Kurzformen: Where's · Who's · What's`,
+    items: [
+      mc("___ are you from? – I'm from Greenwich.", ["Where", "Who", "What"]),
+      mc("___ is that? – It's Mrs Elliot.", ["Who", "Where", "What"], "Who = wer."),
+      mc("___ is this? – It's a biscuit.", ["What", "Who", "Where"]),
+      mc("___ are you, Dave? – I'm eleven.", ["How old", "Who", "Where"]),
+      mc("___ is Sherlock? – He's in the living room.", ["Where", "Who", "How old"], "Where = wo."),
+      mc("___ is always quiet? – Tony is always quiet.", ["Who", "Where", "What"]),
+      mc("___ is your name? – My name is Pia.", ["What", "Who", "How"]),
+      mc("___ colour is Sherlock? – He's black and white.", ["What", "Who", "Where"]),
+      mc("___ is your brother? – He's eight.", ["How old", "What", "Who"]),
+      mc("Was heißt “who”?", ["wer", "wo", "was"]),
+      mc("Was heißt “where”?", ["wo", "wer", "wie"]),
+      inp("Schreibe die Frage: ___ – I'm from Cologne.", ["Where are you from?"]),
+      inp("Schreibe die Frage: ___ – I'm eleven.", ["How old are you?"]),
+      inp("Schreibe die Frage: ___ – My name is Holly.", ["What's your name?", "What is your name?"]),
+      inp("Schreibe die Kurzform: Where is → ___", ["Where's"], "", { strict: true }),
+      inp("Schreibe die Kurzform: Who is → ___", ["Who's"], "", { strict: true }),
+    ],
+  },
+  {
+    id: "g6", group: "Grammar", code: "G6", title: "Possessive determiners",
+    sub: "my, your, his, her, its, our, their",
+    rule: `I → <b>my</b> · you → <b>your</b> · he → <b>his</b> · she → <b>her</b> · it → <b>its</b> · we → <b>our</b> · they → <b>their</b><br>
+      Nicht verwechseln: <b>your</b> dog (dein) ≠ <b>you're</b> (du bist) · <b>its</b> door (seine) ≠ <b>it's</b> (es ist) · <b>their</b> (ihr) ≠ <b>they're</b> (sie sind)`,
+    items: [
+      inp("I'm Luke. ___ dog is Sherlock.", ["My"]),
+      inp("She's Irina. ___ brothers are Luke and Jamie.", ["Her"]),
+      inp("He's Jamie. ___ cars are everywhere.", ["His"]),
+      inp("We're Holly and Amber. ___ flat is in Brook Lane.", ["Our"]),
+      inp("They're Mr and Mrs Elliot. ___ house is small.", ["Their"], "", { strict: true }),
+      inp("It's a nice house. ___ door is green.", ["Its"], "its ohne Apostroph = seine/ihre.", { strict: true }),
+      inp("Are you new here? What's ___ name?", ["your"], "", { strict: true }),
+      inp("This is Pia. ___ family is on holiday in London.", ["Her"]),
+      inp("Luke and Jamie are brothers. ___ room is a problem!", ["Their"], "", { strict: true }),
+      inp("We live in Greenwich. ___ house is in Brook Lane.", ["Our"]),
+      mc("___ a nice house.", ["It's", "Its"], "It's = It is."),
+      mc("The house is nice. ___ garden is big.", ["Its", "It's"], "Its garden = sein Garten."),
+      mc("___ a nice dog, Sherlock.", ["You're", "Your"], "You're = You are."),
+      mc("___ dog is nice, Luke.", ["Your", "You're"], "Your dog = dein Hund."),
+      mc("___ names are Anna and Jack.", ["Their", "They're", "There"], "Their names = ihre Namen."),
+      mc("___ cool parents.", ["They're", "Their", "There"], "They're = They are."),
+    ],
+  },
+  {
+    id: "g7", group: "Grammar", code: "G7", title: "there is / there are",
+    sub: "Aussagen, Fragen, Kurzantworten – Buch S. 166",
+    rule: `<b>There is</b> (There's) + <u>eine</u> Sache: There's a mouse under the chair.<br>
+      <b>There are</b> + <u>mehrere</u> Sachen: There are two mice.<br>
+      <b>Frage:</b> Is there …? / Are there …?<br>
+      <b>Kurzantwort:</b> Yes, there is. / No, there isn't. · Yes, there are. / No, there aren't.`,
+    items: [
+      inp("___ ___ a mouse under the chair.", ["There is", "There's"], "Eine Maus → There is."),
+      inp("___ ___ two beds in the room.", ["There are"], "Zwei Betten → There are."),
+      inp("___ ___ three bedrooms in the Elliots' house.", ["There are"]),
+      inp("___ ___ a nice garden behind the house.", ["There is", "There's"]),
+      inp("___ ___ a garden behind your house? – Yes, there is.", ["Is there"], "Frage: is nach vorn."),
+      inp("___ ___ two cars on the table? – No, there aren't.", ["Are there"]),
+      inp("___ ___ four posters on the wall.", ["There are"]),
+      inp("___ ___ a guitar next to the bed.", ["There is", "There's"]),
+      inp("There ___ a garden behind our house. (verneint)", ["isn't", "is not"]),
+      mc("Is there a clock on the wall? – Yes, ___", ["there is.", "it is.", "there are."], "Die Antwort nimmt there wieder auf."),
+      mc("Are there two mice under the bed? – No, ___", ["there aren't.", "there isn't.", "they aren't."]),
+      mc("Is there a football under the chair? – No, ___", ["there isn't.", "there aren't.", "it isn't."]),
+      mc("Are there posters on the wall? – Yes, ___", ["there are.", "there is.", "they are."]),
+      mc("___ only a small fridge in our kitchen.", ["There's", "There are", "Their"]),
+      mc("___ two shelves in my room.", ["There are", "There is", "There's"]),
+      inp("Schreibe den Satz: a clock / on the table → ___", ["There is a clock on the table.", "There's a clock on the table."]),
+      inp("Schreibe den Satz: two cars / on the floor → ___", ["There are two cars on the floor."]),
+      inp("Schreibe die Frage: a guitar / next to the bed → ___", ["Is there a guitar next to the bed?"]),
+      inp("Schreibe die Frage: two biscuits / under the bed → ___", ["Are there two biscuits under the bed?"]),
+    ],
+  },
+  {
+    id: "med", group: "Writing", code: "M", title: "Sag es auf Englisch",
+    sub: "Mediation: kurze Sätze für Lou und Tony",
+    rule: `Lou und Tony sprechen kein Deutsch. Schreibe einen <b>ganzen englischen Satz</b>.<br>
+      Wenn dein Satz anders ist, aber auch stimmt, tippt auf „Zählt trotzdem“.`,
+    items: [
+      inp("Sage, dass du nicht acht Jahre alt bist.", ["I'm not eight.", "I'm not eight years old."]),
+      inp("Sage, dass du und dein Freund nicht aus London kommt. (We …)", ["We aren't from London.", "We're not from London."]),
+      inp("Sage, dass deine Wohnung nicht groß ist. (It …)", ["It isn't big.", "It's not big.", "My flat isn't big.", "Our flat isn't big."]),
+      inp("Frage Lou, woher sie kommt.", ["Where are you from?", "Where are you from, Lou?", "Lou, where are you from?"]),
+      inp("Frage Tony, wie alt er ist.", ["How old are you?", "How old are you, Tony?", "Tony, how old are you?"]),
+      inp("Frage, ob Tony ein Meerschweinchen ist.", ["Is Tony a guinea pig?"]),
+      inp("Sage, dass dein Zimmer klein ist.", ["My room is small.", "My bedroom is small."]),
+      inp("Sage, dass es in deinem Zimmer zwei Betten gibt.", ["There are two beds in my room.", "There are two beds in my bedroom.", "In my room there are two beds."]),
+      inp("Frage, ob ein Fußball unter dem Stuhl ist.", ["Is there a football under the chair?"]),
+      inp("Sage, dass eine Uhr auf dem Tisch steht.", ["There's a clock on the table."]),
+      inp("Sage, dass deine Freunde nicht verrückt sind. (They …)", ["They aren't crazy.", "They're not crazy.", "My friends aren't crazy."]),
+      inp("Frage, wer das ist.", ["Who's that?", "Who's this?"]),
+      inp("Sage, dass deine große Schwester nett ist.", ["My big sister is nice."]),
+      inp("Frage Lou, was ihre Lieblingsfarbe ist.", ["What's your favourite colour?", "What's your favourite colour, Lou?", "Lou, what's your favourite colour?"]),
+      inp("Sage, dass du mit deinen Eltern und deinem Bruder zusammenwohnst.", ["I live with my parents and my brother."]),
+      inp("Sage, dass du ein Einzelkind bist.", ["I'm an only child."], "an vor a, e, i, o, u: an only child."),
+      inp("Frage, ob es hinter dem Haus einen Garten gibt.", ["Is there a garden behind the house?", "Is there a garden behind your house?"]),
+      inp("Sage, dass ihr in einer Wohnung in Köln wohnt. (We …)", ["We live in a flat in Cologne."]),
+      inp("Sage, dass euer Wohnzimmer groß ist.", ["Our living room is big."]),
+      inp("Frage, wo die Toilette ist. Sei höflich!", ["Where's the toilet, please?", "Where's the toilet?"]),
+    ],
+  },
+  {
+    id: "wri", group: "Writing", code: "W", title: "Lou and Tony ask you",
+    sub: "Freie Antworten – mit Musterlösung zum Vergleichen",
+    rule: `Antworte in <b>ganzen Sätzen</b>. Danach die Musterlösung anschauen und zusammen prüfen:<br>
+      Ist <b>I</b> großgeschrieben? Stimmen die Apostrophe (I'm, it's, there's)? Punkt am Satzende?`,
+    items: [
+      self("Lou: “Hi! I'm Lou. What's your name? And how old are you?”", "My name is … I'm ten.", "Oder: I'm … – Dein Alter als Wort schreiben: ten, eleven …"),
+      self("Tony: “Where are you from?”", "I'm from Germany. I live in …", "from = Herkunft, live in = Wohnort."),
+      self("Lou: “Tell me about your family!”", "I live with my … My brother is … His name is … My sister is … Her name is … My parents are great.", "his für Jungen, her für Mädchen."),
+      self("Tony: “Is your house big? Tell me about your home.”", "Our house isn't big, but it's nice. There are three bedrooms. There's a kitchen, a living room and a bathroom. There's a garden behind the house.", "Eine Sache: There's … · mehrere: There are …"),
+      self("Lou: “What's in your room?”", "In my room there's a bed, a wardrobe and a table. There are two shelves. My lamp is next to the bed. The walls are white.", "Nutze in, on, under, next to, behind, in front of."),
+      self("Tony: “Who's your best friend?”", "My best friend is … He's eleven. He's nice and clever. He's from …", "He's / She's + Adjektiv: nice, cool, clever, friendly, quiet …"),
+      self("Lou: “What's your favourite colour? And your favourite sport?”", "My favourite colour is blue. My favourite sport is football.", "colour und favourite mit ou schreiben."),
+      self("Tony: “Is there a garden behind your house? And is there a pet in your family?”", "Yes, there is. It's small. / No, there isn't. Our dog is Bello. He's crazy!", "Kurzantwort zuerst: Yes, there is. / No, there isn't."),
+      self("Große Aufgabe: Write a text about you (6 to 8 sentences): name, age, family, home, your room.", "I'm … and I'm ten. I'm from Germany. I live with my family in … My brother is … and my sister is … Our house is nice. There are four bedrooms. My room isn't big, but it's cool. There's a bed, a table and a big wardrobe. My posters are on the wall.", "Zähle deine Sätze. Mindestens ein Satz mit there is und einer mit there are."),
+    ],
+  },
+  {
+    id: "mail", group: "Writing", code: "M2", title: "An e-mail from Mia",
+    sub: "Mediation: Was steht in der E-Mail?",
+    note: `<div class="mail">Hi!<br>Thanks for the pictures. Your dog is very nice! My new room is in the loft. It's small, but there's a big table for my models. Here are some photos of my room. Please say hello to your brother.<br>Mia</div>
+      <p>Deine Eltern fragen, was Mia schreibt. Wähle die richtige Aussage.</p>`,
+    items: [
+      mc("Wofür bedankt sich Mia?", ["Für die Bilder.", "Für den Hund.", "Für die Modelle."]),
+      mc("Was sagt Mia über deinen Hund?", ["Sie findet ihn sehr nett.", "Sie hat Angst vor ihm.", "Er ist verrückt."]),
+      mc("Wo ist Mias neues Zimmer?", ["Auf dem Dachboden.", "Im Keller.", "Neben der Küche."], "loft = Dachboden."),
+      mc("Wie ist das Zimmer?", ["Klein, aber mit einem großen Tisch.", "Groß und laut.", "Klein und ohne Tisch."]),
+      mc("Was schickt Mia mit?", ["Fotos von ihrem Zimmer.", "Fotos von ihrem Hund.", "Ein Modell."]),
+      mc("Was sollst du tun?", ["Meinen Bruder grüßen.", "Bald wieder schreiben.", "Meinen Eltern danken."], "say hello to = grüßen."),
+    ],
+  },
+  {
+    id: "t1", group: "Text", code: "T1", title: "This is my family",
+    sub: "Lies zuerst den Text im Buch, S. 16",
+    note: `<p>Lies den Text <b>“This is my family”</b> im Buch auf <b>S. 16</b> laut. Dann beantworte die Fragen, ohne nachzuschauen.</p>`,
+    items: [
+      rf("Luke is twelve.", false, "Luke is eleven. Jan is twelve."),
+      rf("Luke's mother is from Poland.", true),
+      rf("Luke's father is English.", true),
+      rf("Irina is Luke's little sister.", false, "Irina is thirteen. She's his big sister."),
+      rf("Jamie is eight.", true),
+      rf("The Zajacs live in Greenwich.", false, "They live in Cracow."),
+      rf("Jan is an only child.", true),
+      rf("Sherlock is a quiet dog.", false, "He's a crazy dog."),
+      mc("Who is Jan?", ["Luke's cousin", "Luke's brother", "Luke's uncle"]),
+      mc("Who are Henry and Carol Elliot?", ["Luke's grandad and grandma", "Luke's uncle and aunt", "Luke's parents"]),
+      mc("Who is Mila Zajac?", ["Luke's aunt", "Luke's mum", "Luke's grandma"]),
+      mc("How old is Irina?", ["thirteen", "twelve", "eight"]),
+    ],
+  },
+  {
+    id: "t2", group: "Text", code: "T2", title: "What's the problem?",
+    sub: "Lies zuerst den Text im Buch, S. 19",
+    note: `<p>Lies den Text <b>“What's the problem?”</b> im Buch auf <b>S. 19</b> laut, am besten mit verteilten Rollen. Dann beantworte die Fragen.</p>`,
+    items: [
+      rf("There's a nice garden behind the Elliots' house.", true),
+      rf("The Elliots' house is big.", false, "Their house is small."),
+      rf("There are four bedrooms in the house.", false, "There are only three bedrooms."),
+      rf("Luke and Jamie are in one room.", true),
+      rf("Jamie's cars are everywhere.", true),
+      rf("The new bedroom is in the cellar.", false, "It's in the loft."),
+      rf("The new bedroom is Dad's idea.", false, "It's Mrs Elliot's idea."),
+      mc("What's the problem with the two boys?", ["Their things are everywhere in a small room.", "There isn't a garden.", "Their sister is in their room."]),
+      mc("What's the new problem?", ["Luke and Jamie both say: “My room!”", "The loft is small.", "Dad isn't happy with the idea."]),
+      mc("Where are Jamie's cars? Which one is NOT in the text?", ["on the wardrobe", "under the chair", "behind the door"], "In the text: on the floor, next to the bed, under the chair, behind the door, in front of the cupboard."),
+    ],
+  },
+  {
+    id: "l1", group: "Listening", code: "L1", title: "Emma's home",
+    sub: "Hör zu und beantworte die Fragen",
+    audio: "Hi! I'm Emma Clark. I'm eleven and I'm from Bristol. I live with my mum, my dad and my two brothers. Their names are Ben and Tom. Ben is fourteen and Tom is six. Our house is small, but it's nice. There are three bedrooms. My room is in the loft! There's a bed, a wardrobe and a big table in my room. My guitar is next to the bed, and there are four posters on the wall. Our cat Mimi is always on my bed. She's very quiet. There isn't a garden behind our house, but there's a park in our street.",
+    items: [
+      mc("How old is Emma?", ["eleven", "twelve", "seven"]),
+      mc("Who is in Emma's family?", ["mum, dad and two brothers", "mum, dad and two sisters", "mum, dad and one brother"]),
+      mc("How old is Ben?", ["fourteen", "forty", "four"], "fourteen = 14, forty = 40."),
+      mc("How old is Tom?", ["six", "sixteen", "eight"]),
+      mc("How many bedrooms are there?", ["three", "two", "four"]),
+      mc("Where is Emma's room?", ["in the loft", "next to the kitchen", "in the cellar"]),
+      mc("What's next to the bed?", ["a guitar", "a table", "a wardrobe"]),
+      mc("How many posters are on the wall?", ["four", "five", "fourteen"]),
+      mc("Who is Mimi?", ["the family's cat", "Emma's sister", "Emma's dog"]),
+      mc("Is there a garden behind the house?", ["No, there isn't.", "Yes, there is.", "Yes, there are."]),
+    ],
+  },
+  {
+    id: "l2", group: "Listening", code: "L2", title: "Ben's room",
+    sub: "Achte auf Zahlen und Orte",
+    audio: "Hi, I'm Ben. I'm twelve. Our flat is at twenty-four Green Street. It isn't big: there are only two bedrooms. My sister Lucy and I are in one room. Lucy is nine. Her things are everywhere! Her cuddly toys are on my bed, her books are under the table, and her skateboard is in front of the door. There are fifteen toy cars on the floor. They're my cars. Sorry, Lucy! Our mum is from Germany and our dad is English. Here's my mum's idea: a new bedroom for me in the cellar. Great!",
+    items: [
+      mc("How old is Ben?", ["twelve", "twenty", "eleven"]),
+      mc("What's the address?", ["24 Green Street", "42 Green Street", "14 Green Street"]),
+      mc("How many bedrooms are there in the flat?", ["two", "three", "one"]),
+      mc("How old is Lucy?", ["nine", "nineteen", "five"]),
+      mc("Where are Lucy's cuddly toys?", ["on Ben's bed", "under the table", "on the floor"]),
+      mc("Where are her books?", ["under the table", "on the shelf", "in front of the door"]),
+      mc("Where's the skateboard?", ["in front of the door", "behind the door", "next to the bed"]),
+      mc("How many toy cars are on the floor?", ["fifteen", "fifty", "five"], "fifteen = 15, fifty = 50."),
+      mc("Who is from Germany?", ["Ben's mum", "Ben's dad", "Lucy"]),
+      mc("Where's Ben's new bedroom?", ["in the cellar", "in the loft", "in the garage"]),
+    ],
+  },
+];
+
+/* Vokabeln: [deutsch, englisch (Varianten mit |), Hinweis] – "(to) x" akzeptiert "x" und "to x" */
+const VOCAB = [
+  { id: "v-ci", name: "Unit 1 · Check-in", pages: "S. 202–203", items: [
+    ["zu Hause", "at home"], ["Familie", "family"], ["wohnen; leben", "(to) live"], ["Wohnung", "flat"],
+    ["in der Straße; auf der Straße", "in the street"], ["Haus", "house"], ["Tür", "door"], ["Fernseher", "TV|television"],
+    ["Stuhl", "chair"], ["Tisch", "table"], ["Dusche", "shower"], ["Badewanne", "bath"], ["Toilette", "toilet"],
+    ["Bett", "bed"], ["Uhr", "clock"], ["Kleiderschrank", "wardrobe"], ["Küchenschrank; Schrank", "cupboard", "Das p hört man nicht."],
+    ["Herd", "cooker"], ["Wohnzimmer", "living room"], ["Schlafzimmer", "bedroom"], ["Küche", "kitchen"],
+    ["Badezimmer", "bathroom"], ["gut", "good"], ["Keks", "biscuit"], ["unter", "under"], ["helfen", "(to) help"],
+    ["sammeln", "(to) collect"], ["neu", "new"], ["klein (Gegenteil von big)", "small|little"],
+  ]},
+  { id: "v-s1", name: "Unit 1 · Station 1", pages: "S. 203–204", items: [
+    ["Schwester", "sister"], ["Bruder", "brother"], ["Vater", "father"], ["Mutter", "mother"], ["Eltern", "parents"],
+    ["Cousin; Cousine", "cousin"], ["Einzelkind", "only child"], ["Papa", "dad"], ["Mama", "mum"],
+    ["Onkel", "uncle"], ["Tante", "aunt"], ["Opa", "grandad"], ["Oma", "grandma"], ["Stammbaum", "family tree"],
+    ["immer; ständig", "always"], ["einfach; leicht", "easy"], ["Erzähle mir von …", "Tell me about …|Tell me about"],
+    ["nett", "nice"], ["großartig", "great"], ["witzig", "fun"], ["verrückt", "crazy"], ["ruhig; still; leise", "quiet"],
+    ["groß (bei Personen)", "tall"], ["klein (bei Personen)", "short|small"], ["freundlich", "friendly"],
+    ["schlau", "clever"], ["albern; dumm", "silly"], ["laut", "noisy"], ["Meerschweinchen", "guinea pig"],
+    ["Sprache", "language"], ["erst; bloß; nur", "only"], ["falsch", "wrong", "Das w hört man nicht."],
+    ["Danke.", "Thanks.|Thank you."], ["sehr", "very"], ["einige; ein paar", "some"], ["von", "of"],
+    ["grüßen; Grüße ausrichten", "(to) say hello|say hello to|to say hello to"], ["sie ist (Kurzform)", "she's"],
+    ["ist nicht (Kurzform)", "isn't"], ["er ist (Kurzform)", "he's"],
+  ]},
+  { id: "v-s2", name: "Unit 1 · Station 2", pages: "S. 204–206", items: [
+    ["Problem; Schwierigkeit", "problem"], ["es gibt (Einzahl)", "there is|there's"], ["es gibt (Mehrzahl)", "there are"],
+    ["da; dort", "there"], ["Garten", "garden"], ["hinter", "behind"], ["Herr (Anrede)", "Mr"], ["Frau (Anrede)", "Mrs"],
+    ["jetzt; nun", "now"], ["Auto", "car"], ["überall", "everywhere"], ["wieder; noch einmal", "again"],
+    ["Fußboden", "floor"], ["neben", "next to"], ["vor (räumlich)", "in front of"], ["zuhören; anhören", "(to) listen|listen to|to listen to", "Das t hört man nicht."],
+    ["Idee; Einfall", "idea"], ["Dachboden", "loft"], ["eigene/-r/-s", "own"], ["in der Mitte (von)", "in the middle|in the middle of"],
+    ["rechts; auf der rechten Seite", "on the right"], ["links; auf der linken Seite", "on the left"],
+    ["Lampe", "lamp"], ["Spiegel", "mirror"], ["Regal", "shelf"], ["Regale (Mehrzahl)", "shelves"], ["Teppich; Vorleger", "rug"],
+    ["Gitarre", "guitar"], ["Poster", "poster"], ["Spielzeug", "toy"], ["Stofftier", "cuddly toy"], ["Computer", "computer"],
+    ["von … bis", "from … to|from to|from ... to"], ["Antwort", "answer", "Das w hört man nicht."], ["Wand; Mauer", "wall"],
+    ["Kühlschrank", "fridge"], ["Adresse", "address", "Zwei d, zwei s."], ["sein/-e; ihr/-e (bei Sachen)", "its", "Ohne Apostroph!"],
+    ["sich erinnern; sich merken", "(to) remember"], ["oder", "or"], ["mehr; weitere", "more"],
+  ]},
+  { id: "v-st", name: "Unit 1 · Unit task, Story, Check-out", pages: "S. 207", items: [
+    ["Fantasie; Traum-", "fantasy"], ["zeichnen", "(to) draw"], ["Stufe; Schritt", "step"], ["Dach", "roof"],
+    ["Fenster", "window"], ["Flur", "hall"], ["Keller", "cellar"], ["Terrasse", "terrace"], ["Balkon", "balcony"],
+    ["Garage", "garage"], ["Schuppen", "shed"], ["belebt; beschäftigt", "busy"], ["wer", "who"],
+    ["erkunden; erforschen; sich umschauen", "(to) explore"], ["beste/-r/-s", "best"], ["Tasche; Tüte", "bag"],
+    ["vielleicht", "maybe"], ["nach (zeitlich)", "after"], ["Besuch", "visit"], ["draußen; nach draußen", "outside"],
+    ["schrecklich; furchtbar", "awful"], ["Keine Sorge!", "Don't worry!"], ["Satz", "sentence"],
+    ["richtig; korrekt", "right"], ["Ende; Schluss (einer Geschichte)", "ending"], ["sprechen über; erzählen von", "(to) talk about"],
+  ]},
+  { id: "v-201", name: "Pick-up A · Farben und S. 201", pages: "S. 201", items: [
+    ["schwarz", "black"], ["blau", "blue"], ["braun", "brown"], ["grün", "green"], ["grau", "grey"], ["orange", "orange"],
+    ["pink; rosa", "pink"], ["lila; violett", "purple"], ["rot", "red"], ["weiß", "white"], ["gelb", "yellow"],
+    ["Bild; Foto", "picture"], ["Leute; Menschen", "people"], ["Ding; Sache", "thing"], ["Zahl; Nummer", "number"],
+    ["bitte", "please"], ["Alphabet", "alphabet"], ["Ich kann Sherlock sehen.", "I can see Sherlock."],
+    ["Welche Farbe hat Sherlock?", "What colour is Sherlock?"], ["Sage deine Telefonnummer.", "Say your phone number."],
+    ["Vier plus sechs ist zehn.", "Four and six is ten."],
+  ]},
+  { id: "v-pua", name: "Pick-up A · S. 198–200", pages: "S. 198–200", items: [["Ich bin aus Greenwich.", "I'm from Greenwich."], ["Schau mal! / Schaut mal!", "Look!"], ["zwei Jungen und ein Hund", "two boys and a dog"], ["im Greenwich-Park", "in Greenwich Park"], ["Hunde sind meine Freunde, aber Katzen nicht.", "Dogs are my friends, but not cats."], ["Ich bin eine Maus.", "I'm a mouse."], ["Maus – Mäuse (Einzahl und Mehrzahl)", "mouse – mice|mouse - mice"], ["Hier ist dein Ball.", "Here's your ball."], ["Hallo.", "Hello."], ["Ich heiße Pia. / Ich bin Pia.", "I'm Pia.|My name is Pia."], ["Du bist ein lieber Hund.", "You're a nice dog."], ["Wie heißt du? / Wie heißen Sie?", "What's your name?"], ["Entschuldigung! / Tut mir leid!", "Sorry!"], ["Mein Hund ist verrückt.", "My dog is crazy."], ["Ich heiße Luke.", "My name is Luke.|I'm Luke."], ["Wir sind aus Greenwich.", "We're from Greenwich."], ["Woher kommst du? / Woher kommt ihr? / Woher kommen Sie?", "Where are you from?"], ["Bist du im Urlaub? / Seid ihr im Urlaub? / Sind Sie im Urlaub?", "Are you on holiday?"], ["ja", "yes"], ["Ich bin mit meinen Eltern hier.", "I'm here with my parents."], ["Wie alt bist du? / Wie alt sind Sie?", "How old are you?"], ["Du auch?", "You too?"], ["nein", "no"], ["deutsch / Deutsch / aus Deutschland / Deutsche/-r", "German"], ["anders / unterschiedlich / verschieden", "different"], ["Ich bin Engländer/-in.", "I'm English."], ["Ich liebe Hunde. / Ich mag Hunde total gern.", "I love dogs."], ["Hunde lieben Eichhörnchen.", "Dogs love squirrels."], ["Das war knapp!", "That was close!"], ["Tier", "animal"], ["Danke.", "Thank you."], ["Das (hier) ist Pia.", "This is Pia."], ["ein Mädchen aus Deutschland", "a girl from Germany"], ["Schule", "school"], ["Der Greenwich-Park ist groß.", "Greenwich Park is big."], ["Er ist super zum Radfahren. (er = der Greenwich-Park)", "It's great for cycling."], ["Ich fahre nicht gern Rad.", "I don't like cycling."], ["Mein Lieblingssport ist Fußball.", "My favourite sport is football."], ["Ich mag den See mit den Booten. / Mir gefällt der See mit den Booten.", "I like the boating lake."], ["Was ist das?", "What's that?"], ["Lass/Lasst uns hingehen! / Los, gehen wir hin!", "Let's go!"], ["Es macht Spaß.", "It's fun."], ["Rätsel", "puzzle"], ["eins", "one"], ["zwei", "two"], ["drei", "three"], ["vier", "four"], ["fünf", "five"], ["sechs", "six"], ["sieben", "seven"], ["acht", "eight"], ["neun", "nine"], ["zehn", "ten"], ["elf", "eleven"], ["zwölf", "twelve"], ["Ratte", "rat"], ["Ich habe keine Angst vor Hunden.", "I'm not scared of dogs."], ["Ich habe Angst vor Katzen.", "I'm scared of cats."], ["Würmer sind o.k.", "Worms are OK."], ["Kaninchen sind nett.", "Rabbits are nice."], ["Sie sind meine Freunde. (sie = mehrere)", "They're my friends."], ["Sie essen keine Mäuse. (sie = mehrere)", "They don't eat mice."], ["Wort", "word"], ["Inlineskatefahren ist toll.", "Inline skating is great."], ["Volleyball ist ein toller Sport.", "Volleyball is a great sport."], ["der-/die-/dasselbe / der/die/das gleiche", "the same"], ["Farbe", "colour"], ["Was ist deine Lieblingsfarbe?", "What's your favourite colour?"], ["Pferd", "horse"], ["Katze", "cat"], ["Hund", "dog"], ["Maus", "mouse"], ["Kaninchen", "rabbit"], ["Hamster", "hamster"], ["Eichhörnchen", "squirrel"], ["Fisch", "fish"], ["Wellensittich", "budgie"], ["Papagei", "parrot"], ["Wurm", "worm"], ["Bär", "bear"]] },
+];
+
+</script>
+<script>
+(function(){
+"use strict";
+var app=document.getElementById("app");
+var KEY="theo-englisch-sa1";
+var store={best:{}};
+try{var raw=localStorage.getItem(KEY);if(raw)store=JSON.parse(raw)||store;if(!store.best)store.best={};}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+
+/* ---------- Hilfen ---------- */
+function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function norm(s){
+  return String(s).toLowerCase().replace(/[‘’`´]/g,"'").replace(/…/g,"...")
+    .replace(/[.!?,;:]+/g," ").replace(/\s+/g," ").trim();
+}
+function loose(s){
+  s=" "+norm(s)+" ";
+  s=s.replace(/ i'm /g," i am ").replace(/isn't/g,"is not").replace(/aren't/g,"are not")
+     .replace(/(\w+)'re /g,"$1 are ")
+     .replace(/ (he|she|it|there|that|what|where|who|how|here)'s /g," $1 is ")
+     .replace(/[\u2013-]/g," ");
+  return s.replace(/\s+/g," ").trim();
+}
+function variants(a){
+  var out=[];
+  a.forEach(function(x){
+    x.split("|").forEach(function(v){
+      var m=v.match(/^\(to\) (.+)$/);
+      if(m){out.push(m[1]);out.push("to "+m[1]);}else out.push(v);
+    });
+  });
+  return out;
+}
+function isRight(item,val){
+  var f=item.strict?norm:loose, v=f(val);
+  if(!v)return false;
+  return variants(item.a).some(function(x){return f(x)===v;});
+}
+function showAnswer(item){
+  var v=variants(item.a);
+  return v[0];
+}
+function qNode(text){
+  var p=el("p","q");
+  var parts=String(text).split("___");
+  parts.forEach(function(part,i){
+    p.appendChild(document.createTextNode(part));
+    if(i<parts.length-1){p.appendChild(el("span","gap"," "));}
+  });
+  return p;
+}
+
+/* ---------- Zahlen ---------- */
+var ONES=["","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+var TENS=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+function numWord(n){
+  if(n===100)return "a hundred|one hundred";
+  if(n<20)return ONES[n];
+  var t=Math.floor(n/10),o=n%10;
+  return o?TENS[t]+"-"+ONES[o]:TENS[t];
+}
+function numberItems(){
+  var pool=[12,13,14,15,18,19,20,30,40,50,80,90,100];
+  var set={};
+  shuffle(pool).slice(0,7).forEach(function(n){set[n]=1;});
+  while(Object.keys(set).length<12){set[21+Math.floor(Math.random()*78)]=1;}
+  return shuffle(Object.keys(set)).map(function(n){
+    n=+n;
+    return {t:"in",q:"Schreibe die Zahl als Wort: "+n+" → ___",a:[numWord(n)],
+      why:(n>20&&n%10?"Zehner und Einer mit Bindestrich.":(n===40?"forty ohne u.":(n===15||n===50?"fif…, nicht five…":"")))};
+  });
+}
+function vocabItems(group,n){
+  return shuffle(group.items).slice(0,n).map(function(v){
+    return {t:"in",q:v[0]+" → ___",a:[v[1]],why:v[2]||"",vocab:true,strict:/Kurzform/.test(v[0])};
+  });
+}
+
+/* ---------- Startseite ---------- */
+function daysLeft(){
+  var now=new Date(), d=new Date(2026,10,17);
+  var a=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  return Math.round((d-a)/86400000);
+}
+(function(){
+  var n=daysLeft(), c=document.getElementById("countdown");
+  c.textContent=n>1?"Noch "+n+" Tage":(n===1?"Morgen!":(n===0?"Heute! Viel Erfolg!":"Geschafft"));
+})();
+function badge(id){
+  var b=store.best[id], s=el("span","badge"+(b>=80?" done":""));
+  s.textContent=b==null?"neu":(b+" %");
+  return s;
+}
+function tile(code,title,sub,id,fn,wide){
+  var t=el("button","tile"+(wide?" wide":""));t.type="button";
+  var c=el("span","code",code);if(id)c.appendChild(badge(id));
+  t.appendChild(c);t.appendChild(el("span","tt",title));
+  if(sub)t.appendChild(el("span","ts",sub));
+  t.addEventListener("click",fn);return t;
+}
+function home(){
+  stopSpeak();
+  app.textContent="";
+  var groups=[["Grammar","Grammar – G1 bis G7"],["Writing","Writing und Mediation"],["Text","Text Comprehension"],["Listening","Listening Comprehension"]];
+  var g0=el("div","grid");g0.style.marginTop="14px";
+  g0.appendChild(tile("Mix","Grammar-Mix: 20 Aufgaben quer durch G1 bis G7","Gut zum Schluss, wenn die einzelnen Themen sitzen","mix",startMix,true));
+  app.appendChild(g0);
+  groups.forEach(function(g){
+    app.appendChild(el("h2",null,g[1]));
+    var grid=el("div","grid");
+    SECTIONS.filter(function(s){return s.group===g[0];}).forEach(function(s){
+      grid.appendChild(tile(s.code,s.title,s.sub,s.id,function(){startSection(s);}));
+    });
+    app.appendChild(grid);
+    if(g[0]==="Grammar"){
+      /* nichts */
+    }
+  });
+  app.appendChild(el("h2",null,"Vocabulary – auch die Schreibung"));
+  var vg=el("div","grid");
+  VOCAB.forEach(function(v){
+    vg.appendChild(tile(v.pages,v.name,v.items.length+" Wörter · 15 pro Runde",v.id,function(){startVocab(v);}));
+  });
+  vg.appendChild(tile("S. 206","Numbers 1–100","Zahlen als Wort schreiben","num",startNumbers));
+  app.appendChild(vg);
+  var p=el("p","hint","Tipp: Bei Schreibaufgaben zählen Apostroph und Rechtschreibung. Groß- und Kleinschreibung am Satzanfang wird nicht gewertet.");
+  app.appendChild(p);
+  window.scrollTo(0,0);
+}
+
+/* ---------- Runde ---------- */
+var S=null;
+function startSection(sec){
+  run({id:sec.id,title:sec.code+" · "+sec.title,rule:sec.rule,note:sec.note,audio:sec.audio,items:shuffle(sec.items),again:function(){startSection(sec);}});
+}
+function startMix(){
+  var all=[];
+  SECTIONS.filter(function(s){return s.group==="Grammar";}).forEach(function(s){
+    shuffle(s.items).slice(0,3).forEach(function(i){all.push(i);});
+  });
+  run({id:"mix",title:"Grammar-Mix",items:shuffle(all).slice(0,20),again:startMix});
+}
+function startVocab(v){
+  run({id:v.id,title:v.name,rule:"Schreibe das englische Wort. Achte auf jeden Buchstaben!",items:vocabItems(v,15),again:function(){startVocab(v);}});
+}
+function startNumbers(){
+  run({id:"num",title:"Numbers 1–100",rule:"13–19 enden auf <b>-teen</b>, Zehner auf <b>-ty</b>. Zwischen Zehner und Einer steht ein Bindestrich: twenty<u>-</u>one. Achtung: <b>forty</b> (ohne u), <b>fifteen</b>, <b>fifty</b>, <b>eighteen</b> (nur ein t).",items:numberItems(),again:startNumbers});
+}
+function run(cfg){
+  stopSpeak();
+  S={cfg:cfg,queue:cfg.items.map(function(i){return {item:i,retry:false};}),total:cfg.items.length,done:0,right:0,missed:[],selfCount:0};
+  render();
+}
+function header(){
+  var bar=el("div","bar");
+  var b=el("button","back","← Übersicht");b.type="button";b.addEventListener("click",home);
+  var pr=el("div","prog");var i=el("i");i.style.width=Math.round(100*S.done/S.total)+"%";pr.appendChild(i);
+  bar.appendChild(b);bar.appendChild(pr);bar.appendChild(el("span","pn",Math.min(S.done+1,S.total)+" / "+S.total));
+  return bar;
+}
+function render(){
+  app.textContent="";
+  if(!S.queue.length){return result();}
+  var cur=S.queue[0], item=cur.item, cfg=S.cfg;
+  app.appendChild(header());
+  app.appendChild(el("h2",null,cfg.title));
+  if(cfg.rule){
+    var d=el("details","rule");d.open=S.done===0&&!cur.retry;
+    var sm=el("summary",null,"Merkkasten");d.appendChild(sm);
+    var dv=el("div");dv.innerHTML=cfg.rule;d.appendChild(dv);app.appendChild(d);
+  }
+  if(cfg.note){var n=el("div","rule");n.innerHTML=cfg.note;app.appendChild(n);}
+  if(cfg.audio){app.appendChild(player(cfg.audio));}
+  var card=el("div","card");
+  if(cur.retry){card.appendChild(el("p","hint","Noch einmal, diese Aufgabe war vorhin falsch:"));}
+  card.appendChild(qNode(item.q));
+  if(item.t==="mc")renderMC(card,cur);
+  else if(item.t==="in")renderIN(card,cur);
+  else renderSELF(card,cur);
+  app.appendChild(card);
+}
+function finish(cur,ok,card,opts){
+  opts=opts||{};
+  var item=cur.item;
+  var fb=el("div","fb "+(ok?"ok":"no"));
+  fb.appendChild(el("b","big",ok?pick(["Richtig!","Super!","Genau!","Yes!","Well done!"]):"Noch nicht ganz."));
+  if(!ok||opts.always){
+    if(opts.solution){var s=el("span","sol",opts.solution);fb.appendChild(s);}
+  }
+  if(item.why){fb.appendChild(el("span","why",item.why));}
+  card.appendChild(fb);
+  var state={ok:ok};
+  var nx=el("div","next");
+  var go=el("button","btn","Weiter →");go.type="button";
+  go.addEventListener("click",function(){advance(cur,state.ok);});
+  nx.appendChild(go);
+  if(!ok&&opts.override){
+    var ov=el("button","btn ghost","Zählt trotzdem");ov.type="button";
+    ov.addEventListener("click",function(){state.ok=true;fb.className="fb ok";fb.querySelector("b.big").textContent="Als richtig gezählt.";ov.hidden=true;});
+    nx.appendChild(ov);
+  }
+  card.appendChild(nx);
+  go.focus();
+}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function advance(cur,ok){
+  S.queue.shift();
+  if(!cur.retry){
+    S.done++;
+    if(ok)S.right++;
+    else{S.missed.push(cur.item);S.queue.push({item:cur.item,retry:true});}
+  }else if(!ok){
+    /* zweite Chance vertan: nicht endlos wiederholen */
+  }
+  render();window.scrollTo(0,0);
+}
+function renderMC(card,cur){
+  var item=cur.item, correct=item.o[0];
+  var order=item.fixed?item.fixed:shuffle(item.o);
+  var box=el("div","opts");
+  order.forEach(function(o){
+    var b=el("button","opt",o);b.type="button";
+    b.addEventListener("click",function(){
+      Array.prototype.forEach.call(box.children,function(x){x.disabled=true;if(x.textContent===correct)x.classList.add("right");});
+      var ok=o===correct;if(!ok)b.classList.add("wrong");
+      finish(cur,ok,card,{});
+    });
+    box.appendChild(b);
+  });
+  card.appendChild(box);
+}
+function renderIN(card,cur){
+  var item=cur.item;
+  var form=el("form","row");
+  var input=el("input","ans");input.type="text";input.id="answer";
+  input.setAttribute("autocomplete","off");input.setAttribute("autocorrect","off");
+  input.setAttribute("autocapitalize","off");input.setAttribute("spellcheck","false");
+  input.setAttribute("aria-label","Deine Antwort");input.placeholder="Hier schreiben …";
+  var b=el("button","btn","Prüfen");b.type="submit";
+  form.appendChild(input);form.appendChild(b);
+  form.addEventListener("submit",function(ev){
+    ev.preventDefault();
+    if(!input.value.trim()){input.focus();return;}
+    if(input.disabled)return;
+    input.disabled=true;b.disabled=true;b.hidden=true;
+    var ok=isRight(item,input.value);
+    finish(cur,ok,card,{solution:showAnswer(item),override:true,always:true});
+  });
+  card.appendChild(form);
+  setTimeout(function(){try{input.focus();}catch(e){}},30);
+}
+function renderSELF(card,cur){
+  var item=cur.item;
+  var ta=el("textarea","ans");ta.id="answer";ta.setAttribute("autocorrect","off");ta.setAttribute("autocapitalize","off");
+  ta.setAttribute("spellcheck","false");ta.setAttribute("aria-label","Deine Antwort");ta.placeholder="Schreibe deine Antwort auf Englisch …";
+  card.appendChild(ta);
+  var nx=el("div","next");
+  var show=el("button","btn","Musterlösung zeigen");show.type="button";
+  nx.appendChild(show);card.appendChild(nx);
+  show.addEventListener("click",function(){
+    show.hidden=true;
+    var fb=el("div","fb ok");
+    fb.appendChild(el("b","big","So könnte es aussehen:"));
+    fb.appendChild(el("span","sol",item.model));
+    if(item.tip)fb.appendChild(el("span","why",item.tip));
+    card.appendChild(fb);
+    var n2=el("div","next");
+    var y=el("button","btn","Passt ✓");y.type="button";
+    var n=el("button","btn ghost","Später nochmal");n.type="button";
+    y.addEventListener("click",function(){advance(cur,true);});
+    n.addEventListener("click",function(){advance(cur,false);});
+    n2.appendChild(y);n2.appendChild(n);card.appendChild(n2);
+  });
+}
+function result(){
+  var cfg=S.cfg, pct=Math.round(100*S.right/S.total);
+  if(store.best[cfg.id]==null||pct>store.best[cfg.id]){store.best[cfg.id]=pct;save();}
+  var c=el("div","card result");
+  c.appendChild(el("h2",null,cfg.title));
+  c.appendChild(el("div","num",S.right+" / "+S.total));
+  c.appendChild(el("p",null,pct>=90?"Stark! Das sitzt.":(pct>=70?"Gut! Die Fehler noch einmal anschauen.":"Das üben wir noch einmal. Lies zuerst den Merkkasten.")));
+  if(S.missed.length){
+    var box=el("div","miss");box.appendChild(el("b",null,"Das war beim ersten Versuch falsch:"));
+    var ul=el("ul");
+    S.missed.forEach(function(it){
+      var li=el("li");
+      var sol=it.t==="mc"?it.o[0]:(it.t==="in"?showAnswer(it):"");
+      li.textContent=String(it.q).replace(/___/g,"…")+(sol?"  →  "+sol:"");
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);c.appendChild(box);
+  }
+  var nx=el("div","next");
+  var a=el("button","btn","Nochmal üben");a.type="button";a.addEventListener("click",cfg.again);
+  var h=el("button","btn ghost","Zur Übersicht");h.type="button";h.addEventListener("click",home);
+  nx.appendChild(a);nx.appendChild(h);c.appendChild(nx);
+  app.appendChild(c);window.scrollTo(0,0);
+}
+
+/* ---------- Vorlesen ---------- */
+function stopSpeak(){try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){}}
+function voice(){
+  try{
+    var vs=window.speechSynthesis.getVoices()||[];
+    return vs.filter(function(v){return /^en[-_]GB/i.test(v.lang);})[0]||vs.filter(function(v){return /^en/i.test(v.lang);})[0]||null;
+  }catch(e){return null;}
+}
+try{if(window.speechSynthesis)window.speechSynthesis.getVoices();}catch(e){}
+function speak(text,rate,status){
+  try{
+    if(!window.speechSynthesis||!window.SpeechSynthesisUtterance){throw new Error("no tts");}
+    window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);u.lang="en-GB";var v=voice();if(v)u.voice=v;u.rate=rate;
+    u.onend=function(){status.textContent="Fertig. Du kannst es noch einmal anhören.";};
+    u.onerror=function(){status.textContent="Vorlesen klappt auf diesem Gerät nicht. Tippt auf „Text zeigen“ und lest den Text vor.";};
+    window.speechSynthesis.speak(u);
+    status.textContent="Läuft … gut zuhören!";
+  }catch(e){
+    status.textContent="Vorlesen klappt auf diesem Gerät nicht. Tippt auf „Text zeigen“ und lest den Text vor.";
+  }
+}
+function player(text){
+  var p=el("div","player");
+  var a=el("button","btn","▶ Anhören");a.type="button";
+  var b=el("button","btn ghost","Langsam anhören");b.type="button";
+  var s=el("button","btn ghost","Stopp");s.type="button";
+  var t=el("button","btn ghost","Text zeigen (für Papa)");t.type="button";
+  var st=el("p",null,"In der Schulaufgabe hörst du den Text zweimal. Hör ihn erst ganz an, dann beantworte die Fragen.");
+  var sc=el("div","script",text);sc.hidden=true;
+  a.addEventListener("click",function(){speak(text,0.9,st);});
+  b.addEventListener("click",function(){speak(text,0.7,st);});
+  s.addEventListener("click",function(){stopSpeak();st.textContent="Gestoppt.";});
+  t.addEventListener("click",function(){sc.hidden=!sc.hidden;});
+  [a,b,s,t,st,sc].forEach(function(x){p.appendChild(x);});
+  return p;
+}
+home();
+})();
+</script>
+</body>
+</html>
