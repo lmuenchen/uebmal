@@ -1,0 +1,84 @@
+/* uebmal.de – gemeinsames Aussehen für Startseite und Eltern-Ansicht */
+:root{
+  --paper:#f4f7f3; --card:#ffffff; --ink:#16302b; --muted:#5b6f6a; --line:#d5e0db;
+  --green:#1f8a5b; --green-ink:#ffffff; --marker:#ffe36e; --marker-ink:#3a3200;
+  --ok:#17794b; --ok-bg:#dff3e7; --mid:#8a6100; --mid-bg:#fff1c9; --bad:#b3372e; --bad-bg:#fbe4e1; --soft:#e8f0ec;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#0f1b18; --card:#182823; --ink:#e8f1ed; --muted:#9db3ac; --line:#2c423b;
+    --green:#3fbf86; --green-ink:#062216; --marker:#e9c93d; --marker-ink:#1f1a00;
+    --ok:#6fdca6; --ok-bg:#173b2b; --mid:#f0c75a; --mid-bg:#3d3212; --bad:#ff9a8f; --bad-bg:#472320; --soft:#20342e;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:18px;line-height:1.45}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 56px}
+.wrap.weit{max-width:980px}
+.kopf{border-top:8px solid var(--green);padding:22px 0 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+h1{font-size:2rem;line-height:1.1;margin:0}
+h1 span{background:var(--marker);color:var(--marker-ink);padding:0 8px;border-radius:6px}
+h1 a{color:inherit;text-decoration:none}
+h2{font-size:1.15rem;margin:28px 0 10px}
+.sub{color:var(--muted);margin:6px 0 0}
+.hinweis{background:var(--soft);border-left:5px solid var(--green);border-radius:8px;padding:12px 14px;margin:18px 0}
+.raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px}
+a.kachel{display:flex;flex-direction:column;gap:4px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;color:inherit;text-decoration:none;min-height:96px}
+a.kachel:hover,a.kachel:focus-visible{border-color:var(--green);outline:none}
+a.kachel b{font-size:1.1rem}
+a.kachel small{color:var(--muted)}
+a.kachel .f{color:var(--green);font-weight:700;font-size:.85rem}
+a.kachel.breit{grid-column:1/-1;background:var(--green);color:var(--green-ink);border-color:var(--green);min-height:0}
+a.kachel.breit .f,a.kachel.breit small{color:var(--green-ink)}
+.knopf{font:inherit;font-weight:700;background:var(--green);color:var(--green-ink);border:0;border-radius:12px;padding:12px 20px;cursor:pointer}
+.knopf.leise{background:none;color:var(--ink);border:1.5px solid var(--line);font-weight:400;padding:8px 14px}
+.knopf:disabled{opacity:.6;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.anmeldung{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:20px 18px;margin-top:18px;max-width:420px;display:flex;flex-direction:column;gap:8px}
+.anmeldung h2{margin:0 0 6px}
+.anmeldung label{font-weight:700;font-size:.95rem}
+.anmeldung input[type=text],.anmeldung input[type=password]{font:inherit;font-size:1.15rem;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:11px 13px;width:100%}
+.anmeldung .haken{font-weight:400;color:var(--muted);display:flex;align-items:center;gap:6px}
+.anmeldung .knopf{margin-top:8px}
+.fehler{background:var(--bad-bg);color:var(--bad);border-radius:10px;padding:10px 12px;margin:4px 0}
+[hidden]{display:none!important}
+
+/* Eltern-Ansicht */
+.leiste{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 4px}
+.leiste select{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.kind{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:7px 16px;cursor:pointer}
+.kind[aria-pressed=true]{background:var(--green);color:var(--green-ink);border-color:var(--green);font-weight:700}
+.zahlen{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.zahl{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+.zahl b{display:block;font-size:1.6rem;line-height:1.15;font-variant-numeric:tabular-nums}
+.zahl span{color:var(--muted);font-size:.85rem}
+.karte{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px}
+.tage{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:130px}
+.tag{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;height:100%;min-width:0}
+.tag i{display:block;width:100%;max-width:34px;background:var(--green);border-radius:5px 5px 0 0;min-height:2px}
+.tag i.null{background:var(--line)}
+.tag small{font-size:.7rem;color:var(--muted);white-space:nowrap}
+.tag em{font-style:normal;font-size:.72rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.rollen{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.8rem;color:var(--muted);font-weight:700;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pille{display:inline-block;border-radius:999px;padding:1px 9px;font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums}
+.pille.gut{background:var(--ok-bg);color:var(--ok)}
+.pille.mittel{background:var(--mid-bg);color:var(--mid)}
+.pille.schwach{background:var(--bad-bg);color:var(--bad)}
+.pille.grau{background:var(--soft);color:var(--muted)}
+.falsch{color:var(--bad)}
+.richtig{color:var(--ok);font-weight:700}
+.text-eintrag{border-top:1px solid var(--line);padding:10px 0}
+.text-eintrag:first-child{border-top:0}
+.text-eintrag .frage{color:var(--muted);font-size:.9rem}
+.text-eintrag .antwort{white-space:pre-wrap;margin:4px 0}
+.schalter{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.schalter:first-child{border-top:0}
+.schalter input{width:22px;height:22px;accent-color:var(--green)}
+.schalter small{color:var(--muted);display:block}
+.klein{font-size:.85rem;color:var(--muted)}

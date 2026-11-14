@@ -5,39 +5,113 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>uebmal.de</title>
-<style>
-:root{--paper:#f4f7f3;--card:#fff;--ink:#16302b;--muted:#5b6f6a;--line:#d5e0db;--green:#1f8a5b;--marker:#ffe36e}
-@media (prefers-color-scheme: dark){:root{--paper:#0f1b18;--card:#182823;--ink:#e8f1ed;--muted:#9db3ac;--line:#2c423b;--green:#3fbf86;--marker:#e9c93d;color-scheme:dark}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:18px;line-height:1.45}
-.wrap{max-width:720px;margin:0 auto;padding:0 16px 48px}
-header{border-top:8px solid var(--green);padding:22px 0 8px}
-h1{font-size:2rem;margin:0}
-h1 span{background:var(--marker);color:#3a3200;padding:0 8px;border-radius:6px}
-p.sub{color:var(--muted);margin:6px 0 0}
-h2{font-size:1.1rem;margin:28px 0 10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-a.tile{display:flex;flex-direction:column;gap:4px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;color:inherit;text-decoration:none;min-height:96px}
-a.tile:hover,a.tile:focus-visible{border-color:var(--green);outline:none}
-a.tile b{font-size:1.1rem}
-a.tile small{color:var(--muted)}
-a.tile .f{color:var(--green);font-weight:700;font-size:.85rem}
-</style>
+<link rel="stylesheet" href="stil.css">
+<script src="lib/supabase.js"></script>
+<script src="config.js"></script>
+<script src="konto.js"></script>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1><span>üb</span> mal</h1>
-    <p class="sub">Kurze Übungsrunden für die Schule.</p>
+  <header class="kopf">
+    <div>
+      <h1><span>üb</span> mal</h1>
+      <p class="sub" id="gruss">Kurze Übungsrunden für die Schule.</p>
+    </div>
+    <button class="knopf leise" id="abmelden" type="button" hidden>Abmelden</button>
   </header>
-  <h2>Englisch</h2>
-  <div class="grid">
-    <a class="tile" href="englisch/"><span class="f">Klasse 5 · Green Line 1</span><b>Schulaufgabe Unit 1</b><small>Grammar, Vocabulary, Writing, Listening</small></a>
-  </div>
-  <h2>Mathe</h2>
-  <div class="grid">
-    <a class="tile" href="mathe/"><span class="f">Klasse 5</span><b>Mission Riesenzahlen</b><small>Große Zahlen, Runden, Zahlenstrahl, negative Zahlen</small></a>
-  </div>
+
+  <main id="inhalt"><p class="sub">Lädt …</p></main>
 </div>
+
+<script>
+(function () {
+  "use strict";
+  var U = window.Uebmal, inhalt = document.getElementById("inhalt");
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function kachel(s) {
+    var a = el("a", "kachel"); a.href = s.pfad;
+    a.appendChild(el("span", "f", s.stufe)); a.appendChild(el("b", null, s.titel)); a.appendChild(el("small", null, s.text));
+    return a;
+  }
+  function zeigeKacheln(seiten, eltern) {
+    inhalt.textContent = "";
+    if (eltern) {
+      var g0 = el("div", "raster");
+      var a = el("a", "kachel breit"); a.href = "eltern/";
+      a.appendChild(el("span", "f", "Nur für Eltern")); a.appendChild(el("b", null, "Eltern-Ansicht"));
+      a.appendChild(el("small", null, "Was wurde geübt, wie gut lief es, was ist freigegeben"));
+      g0.appendChild(a); inhalt.appendChild(g0);
+    }
+    if (!seiten.length) {
+      inhalt.appendChild(el("p", "hinweis", "Für dich ist noch nichts freigeschaltet. Sag Papa Bescheid."));
+      return;
+    }
+    var faecher = [];
+    seiten.forEach(function (s) { if (faecher.indexOf(s.fach) < 0) faecher.push(s.fach); });
+    faecher.forEach(function (f) {
+      inhalt.appendChild(el("h2", null, f));
+      var g = el("div", "raster");
+      seiten.filter(function (s) { return s.fach === f; }).forEach(function (s) { g.appendChild(kachel(s)); });
+      inhalt.appendChild(g);
+    });
+  }
+  function zeigeAnmeldung(meldung) {
+    inhalt.textContent = "";
+    var f = el("form", "anmeldung"); f.setAttribute("autocomplete", "on");
+    f.appendChild(el("h2", null, "Anmelden"));
+    var l1 = el("label", null, "Benutzername"); l1.setAttribute("for", "name");
+    var i1 = el("input"); i1.id = "name"; i1.name = "username"; i1.type = "text"; i1.required = true;
+    i1.setAttribute("autocomplete", "username"); i1.setAttribute("autocapitalize", "off"); i1.setAttribute("autocorrect", "off"); i1.setAttribute("spellcheck", "false");
+    var l2 = el("label", null, "Passwort"); l2.setAttribute("for", "pw");
+    var i2 = el("input"); i2.id = "pw"; i2.name = "password"; i2.type = "password"; i2.required = true; i2.setAttribute("autocomplete", "current-password");
+    var zeig = el("label", "haken"); var cb = el("input"); cb.type = "checkbox"; cb.id = "pwzeigen";
+    cb.addEventListener("change", function () { i2.type = cb.checked ? "text" : "password"; });
+    zeig.appendChild(cb); zeig.appendChild(document.createTextNode(" Passwort anzeigen"));
+    var fehler = el("p", "fehler"); fehler.setAttribute("role", "alert"); fehler.hidden = !meldung; fehler.textContent = meldung || "";
+    var b = el("button", "knopf", "Anmelden"); b.type = "submit";
+    [l1, i1, l2, i2, zeig, fehler, b].forEach(function (x) { f.appendChild(x); });
+    f.addEventListener("submit", async function (ev) {
+      ev.preventDefault();
+      b.disabled = true; b.textContent = "Moment …"; fehler.hidden = true;
+      try {
+        await U.anmelden(i1.value, i2.value);
+        start();
+      } catch (e) {
+        var m = String((e && e.message) || "");
+        fehler.textContent = /invalid|credentials/i.test(m) ? "Benutzername oder Passwort stimmt nicht."
+          : "Die Anmeldung hat nicht geklappt. Prüfe die Internetverbindung und versuch es noch einmal.";
+        fehler.hidden = false; b.disabled = false; b.textContent = "Anmelden";
+      }
+    });
+    inhalt.appendChild(f);
+    i1.focus();
+  }
+  async function start() {
+    if (!U || !U.aktiv) { zeigeKacheln(U ? U.SEITEN : [], false); return; }
+    var sitz = await U.sitzung();
+    if (!sitz) { zeigeAnmeldung(); return; }
+    U.user = sitz.user;
+    var knopf = document.getElementById("abmelden");
+    knopf.hidden = false; knopf.onclick = function () { U.abmelden(); };
+    try {
+      var p = await U.ladeProfil(sitz.user.id);
+      if (!p) { inhalt.textContent = ""; inhalt.appendChild(el("p", "hinweis", "Zu diesem Konto fehlt das Profil. Sag Papa Bescheid.")); return; }
+      U.profil = p;
+      document.getElementById("gruss").textContent = "Hallo " + p.anzeigename + "!";
+      var eltern = p.rolle === "eltern";
+      var frei = eltern ? U.SEITEN.map(function (s) { return s.id; }) : await U.ladeFreigaben(sitz.user.id);
+      var seiten = U.SEITEN.filter(function (s) { return frei.indexOf(s.id) >= 0; });
+      var weiter = new URLSearchParams(location.search).get("weiter");
+      if (weiter && seiten.some(function (s) { return s.pfad === weiter; })) { location.replace(weiter); return; }
+      zeigeKacheln(seiten, eltern);
+      U.nachreichen();
+    } catch (e) {
+      inhalt.textContent = "";
+      inhalt.appendChild(el("p", "hinweis", "Keine Verbindung. Prüfe das Internet und lade die Seite neu."));
+    }
+  }
+  start();
+})();
+</script>
 </body>
 </html>

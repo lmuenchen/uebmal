@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Eltern-Ansicht · uebmal.de</title>
+<link rel="stylesheet" href="../stil.css">
+<script src="../lib/supabase.js"></script>
+<script src="../config.js"></script>
+<script src="../konto.js"></script>
+</head>
+<body>
+<div class="wrap weit">
+  <header class="kopf">
+    <div>
+      <h1><a href="../"><span>üb</span> mal</a></h1>
+      <p class="sub">Eltern-Ansicht</p>
+    </div>
+    <button class="knopf leise" id="abmelden" type="button">Abmelden</button>
+  </header>
+  <main id="inhalt"><p class="sub">Lädt …</p></main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var U = window.Uebmal, sb = U && U.sb, inhalt = document.getElementById("inhalt");
+  var kinder = [], aktuell = null, tage = 30;
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function pct(r, g) { return g ? Math.round(100 * r / g) : null; }
+  function pille(p) {
+    var s = el("span", "pille " + (p == null ? "grau" : p >= 85 ? "gut" : p >= 65 ? "mittel" : "schwach"));
+    s.textContent = p == null ? "–" : p + " %"; return s;
+  }
+  function dauer(sek) {
+    if (!sek) return "0 min";
+    var m = Math.round(sek / 60);
+    if (m < 1) return "< 1 min";
+    return m < 60 ? m + " min" : Math.floor(m / 60) + " h " + (m % 60) + " min";
+  }
+  function wann(iso) {
+    var d = new Date(iso), h = new Date();
+    var t0 = new Date(h.getFullYear(), h.getMonth(), h.getDate()), d0 = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    var diff = Math.round((t0 - d0) / 86400000);
+    var uhr = d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+    if (diff === 0) return "heute, " + uhr;
+    if (diff === 1) return "gestern, " + uhr;
+    return d.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" }) + ", " + uhr;
+  }
+  function seitenTitel(id) { var s = U.seite(id); return s ? s.fach + " · " + s.titel : id; }
+  function tabelle(kopf, zeilen) {
+    var w = el("div", "rollen"), t = el("table"), th = el("thead"), tr = el("tr");
+    kopf.forEach(function (k) { var c = el("th", k.n ? "n" : null, k.t); c.scope = "col"; tr.appendChild(c); });
+    th.appendChild(tr); t.appendChild(th);
+    var tb = el("tbody");
+    zeilen.forEach(function (z) {
+      var r = el("tr");
+      z.forEach(function (c, i) {
+        var td = el("td", kopf[i].n ? "n" : null);
+        if (c instanceof Node) td.appendChild(c); else td.textContent = c == null ? "" : c;
+        r.appendChild(td);
+      });
+      tb.appendChild(r);
+    });
+    t.appendChild(tb); w.appendChild(t); return w;
+  }
+
+  async function start() {
+    document.getElementById("abmelden").onclick = function () { U.abmelden(); };
+    if (!U || !U.aktiv) { inhalt.textContent = ""; inhalt.appendChild(el("p", "hinweis", "Die Konten sind noch nicht eingerichtet.")); return; }
+    var sitz = await U.sitzung();
+    if (!sitz) { location.replace("../"); return; }
+    U.user = sitz.user;
+    try {
+      var p = await U.ladeProfil(sitz.user.id);
+      if (!p || p.rolle !== "eltern") { location.replace("../"); return; }
+      var r = await sb.from("profile").select("id, benutzername, anzeigename, rolle").eq("rolle", "kind").order("anzeigename");
+      if (r.error) throw r.error;
+      kinder = r.data || [];
+      if (!kinder.length) {
+        inhalt.textContent = "";
+        inhalt.appendChild(el("p", "hinweis", "Es gibt noch kein Kinder-Konto. Lege im Supabase-Dashboard unter Authentication → Users ein Konto an."));
+        return;
+      }
+      aktuell = kinder[0];
+      await zeige();
+    } catch (e) {
+      inhalt.textContent = "";
+      inhalt.appendChild(el("p", "fehler", "Die Daten konnten nicht geladen werden. Prüfe die Internetverbindung und lade die Seite neu."));
+    }
+  }
+
+  async function zeige() {
+    var seit = new Date(Date.now() - tage * 86400000).toISOString();
+    var e = await sb.from("ergebnisse").select("*").eq("user_id", aktuell.id).gte("zeit", seit).order("zeit", { ascending: false }).limit(2000);
+    if (e.error) throw e.error;
+    var f = await sb.from("freigaben").select("seite").eq("user_id", aktuell.id);
+    if (f.error) throw f.error;
+    baue(e.data || [], (f.data || []).map(function (x) { return x.seite; }));
+  }
+
+  function baue(erg, frei) {
+    inhalt.textContent = "";
+
+    /* Auswahl */
+    var leiste = el("div", "leiste");
+    kinder.forEach(function (k) {
+      var b = el("button", "kind", k.anzeigename); b.type = "button"; b.setAttribute("aria-pressed", String(k.id === aktuell.id));
+      b.addEventListener("click", function () { aktuell = k; zeige(); });
+      leiste.appendChild(b);
+    });
+    var lab = el("label", "klein", "Zeitraum "); lab.setAttribute("for", "zeitraum");
+    var sel = el("select"); sel.id = "zeitraum";
+    [[7, "7 Tage"], [30, "30 Tage"], [90, "90 Tage"], [365, "1 Jahr"]].forEach(function (o) {
+      var op = el("option", null, o[1]); op.value = o[0]; if (o[0] === tage) op.selected = true; sel.appendChild(op);
+    });
+    sel.addEventListener("change", function () { tage = +sel.value; zeige(); });
+    leiste.appendChild(lab); leiste.appendChild(sel);
+    inhalt.appendChild(leiste);
+
+    /* Kennzahlen: letzte 7 Tage */
+    var vor7 = Date.now() - 7 * 86400000;
+    var w = erg.filter(function (x) { return new Date(x.zeit).getTime() >= vor7; });
+    var sumR = 0, sumG = 0, sumS = 0, tageAktiv = {};
+    w.forEach(function (x) { sumR += x.richtig; sumG += x.gesamt; sumS += x.dauer_s || 0; tageAktiv[new Date(x.zeit).toDateString()] = 1; });
+    var zahlen = el("div", "zahlen");
+    function zahl(wert, text) { var z = el("div", "zahl"); z.appendChild(el("b", null, wert)); z.appendChild(el("span", null, text)); zahlen.appendChild(z); }
+    zahl(erg.length ? wann(erg[0].zeit) : "noch nie", "zuletzt geübt");
+    zahl(String(Object.keys(tageAktiv).length) + " von 7", "Tagen geübt (letzte 7 Tage)");
+    zahl(dauer(sumS), "Übungszeit (letzte 7 Tage)");
+    zahl(String(w.length), "Runden (letzte 7 Tage)");
+    zahl(sumG ? pct(sumR, sumG) + " %" : "–", "richtig beim ersten Versuch (letzte 7 Tage)");
+    inhalt.appendChild(zahlen);
+
+    if (!erg.length) {
+      inhalt.appendChild(el("p", "hinweis", aktuell.anzeigename + " hat im gewählten Zeitraum noch nichts geübt."));
+      baueFreigaben(frei);
+      return;
+    }
+
+    /* Übungszeit pro Tag, 14 Tage */
+    inhalt.appendChild(el("h2", null, "Übungszeit pro Tag (letzte 14 Tage, in Minuten)"));
+    var karte = el("div", "karte"), reihe = el("div", "tage");
+    var heute = new Date(); heute = new Date(heute.getFullYear(), heute.getMonth(), heute.getDate());
+    var proTag = [], max = 1;
+    for (var i = 13; i >= 0; i--) {
+      var d = new Date(heute.getTime() - i * 86400000), key = d.toDateString(), sek = 0;
+      erg.forEach(function (x) { if (new Date(x.zeit).toDateString() === key) sek += x.dauer_s || 0; });
+      var min = Math.round(sek / 60); if (sek > 0 && min === 0) min = 1;
+      proTag.push({ d: d, min: min }); if (min > max) max = min;
+    }
+    proTag.forEach(function (t) {
+      var c = el("div", "tag");
+      c.appendChild(el("em", null, t.min ? String(t.min) : ""));
+      var b = el("i", t.min ? null : "null"); b.style.height = t.min ? Math.max(4, Math.round(88 * t.min / max)) + "px" : "2px";
+      c.appendChild(b);
+      c.appendChild(el("small", null, t.d.toLocaleDateString("de-DE", { weekday: "short" }).replace(".", "") + " " + t.d.getDate() + "."));
+      c.title = t.d.toLocaleDateString("de-DE") + ": " + t.min + " min";
+      reihe.appendChild(c);
+    });
+    karte.appendChild(reihe); inhalt.appendChild(karte);
+
+    /* Nach Thema */
+    inhalt.appendChild(el("h2", null, "Nach Thema"));
+    var gruppen = {}, folge = [];
+    erg.forEach(function (x) {
+      var k = x.seite + "|" + x.modul;
+      if (!gruppen[k]) { gruppen[k] = { seite: x.seite, titel: x.titel, liste: [] }; folge.push(k); }
+      gruppen[k].liste.push(x);
+    });
+    var zeilen = folge.map(function (k) {
+      var g = gruppen[k], l = g.liste, r = 0, n = 0, best = 0, sek = 0;
+      l.forEach(function (x) { r += x.richtig; n += x.gesamt; sek += x.dauer_s || 0; var p = pct(x.richtig, x.gesamt); if (x.abgeschlossen && p > best) best = p; });
+      var fertig = l.filter(function (x) { return x.abgeschlossen; });
+      return { g: g, runden: l.length, letzte: pct(l[0].richtig, l[0].gesamt), schnitt: pct(r, n), best: fertig.length ? best : null, sek: sek, zeit: l[0].zeit };
+    }).sort(function (a, b) { return (a.schnitt == null ? 101 : a.schnitt) - (b.schnitt == null ? 101 : b.schnitt); });
+    var k1 = el("div", "karte");
+    k1.appendChild(tabelle(
+      [{ t: "Thema" }, { t: "Runden", n: 1 }, { t: "Zeit", n: 1 }, { t: "zuletzt", n: 1 }, { t: "Schnitt", n: 1 }, { t: "beste Runde", n: 1 }, { t: "zuletzt geübt" }],
+      zeilen.map(function (z) {
+        var t = el("span"); t.appendChild(el("b", null, z.g.titel)); t.appendChild(el("br")); t.appendChild(el("span", "klein", seitenTitel(z.g.seite)));
+        return [t, String(z.runden), dauer(z.sek), pille(z.letzte), pille(z.schnitt), pille(z.best), wann(z.zeit)];
+      })));
+    k1.appendChild(el("p", "klein", "Sortiert nach Schnitt: Das schwächste Thema steht oben. Gezählt wird, was beim ersten Versuch richtig war."));
+    inhalt.appendChild(k1);
+
+    /* Häufige Fehler */
+    var fehler = {}, texte = [];
+    erg.forEach(function (x) {
+      (x.fehler || []).forEach(function (fe) {
+        if (fe.art === "text") { texte.push({ x: x, fe: fe }); return; }
+        var k = x.seite + "|" + fe.f + "|" + fe.l;
+        if (!fehler[k]) fehler[k] = { f: fe.f, l: fe.l, titel: x.titel, n: 0, antworten: [], zeit: x.zeit };
+        fehler[k].n++;
+        if (fe.a && fehler[k].antworten.indexOf(fe.a) < 0) fehler[k].antworten.push(fe.a);
+      });
+    });
+    var fl = Object.keys(fehler).map(function (k) { return fehler[k]; })
+      .sort(function (a, b) { return b.n - a.n || new Date(b.zeit) - new Date(a.zeit); }).slice(0, 30);
+    if (fl.length) {
+      inhalt.appendChild(el("h2", null, "Das war falsch (häufigste zuerst)"));
+      var k2 = el("div", "karte");
+      k2.appendChild(tabelle(
+        [{ t: "Aufgabe" }, { t: "Antwort" }, { t: "Richtig wäre" }, { t: "wie oft", n: 1 }],
+        fl.map(function (x) {
+          var a = el("span"); a.appendChild(document.createTextNode(x.f)); a.appendChild(el("br")); a.appendChild(el("span", "klein", x.titel));
+          return [a, el("span", "falsch", x.antworten.slice(0, 4).join(" · ") || "–"), el("span", "richtig", x.l), String(x.n)];
+        })));
+      inhalt.appendChild(k2);
+    }
+
+    /* Freie Texte */
+    if (texte.length) {
+      inhalt.appendChild(el("h2", null, "Frei geschriebene Antworten"));
+      var k3 = el("div", "karte");
+      texte.slice(0, 15).forEach(function (t) {
+        var d = el("div", "text-eintrag");
+        d.appendChild(el("div", "frage", wann(t.x.zeit) + " · " + t.fe.f));
+        d.appendChild(el("div", "antwort", t.fe.a || "(nichts geschrieben)"));
+        d.appendChild(el("div", "klein", "Musterlösung: " + t.fe.l + (t.fe.ok === false ? " · selbst als „später nochmal“ markiert" : "")));
+        k3.appendChild(d);
+      });
+      inhalt.appendChild(k3);
+    }
+
+    /* Verlauf */
+    inhalt.appendChild(el("h2", null, "Verlauf"));
+    var k4 = el("div", "karte");
+    k4.appendChild(tabelle(
+      [{ t: "Wann" }, { t: "Thema" }, { t: "Ergebnis", n: 1 }, { t: "", n: 1 }, { t: "Dauer", n: 1 }, { t: "" }],
+      erg.slice(0, 60).map(function (x) {
+        return [wann(x.zeit), x.titel, x.richtig + " / " + x.gesamt, pille(pct(x.richtig, x.gesamt)), dauer(x.dauer_s), x.abgeschlossen ? "" : "abgebrochen"];
+      })));
+    if (erg.length > 60) k4.appendChild(el("p", "klein", "Angezeigt werden die letzten 60 von " + erg.length + " Runden."));
+    inhalt.appendChild(k4);
+
+    baueFreigaben(frei);
+  }
+
+  function baueFreigaben(frei) {
+    inhalt.appendChild(el("h2", null, "Freigaben für " + aktuell.anzeigename));
+    var k = el("div", "karte");
+    U.SEITEN.forEach(function (s) {
+      var z = el("label", "schalter"), cb = el("input"); cb.type = "checkbox"; cb.id = "frei-" + s.id; cb.checked = frei.indexOf(s.id) >= 0;
+      var t = el("span"); t.appendChild(document.createTextNode(s.fach + " · " + s.titel)); t.appendChild(el("small", null, s.text));
+      var status = el("span", "klein");
+      cb.addEventListener("change", async function () {
+        cb.disabled = true; status.textContent = "speichert …";
+        var r = cb.checked
+          ? await sb.from("freigaben").insert({ user_id: aktuell.id, seite: s.id })
+          : await sb.from("freigaben").delete().eq("user_id", aktuell.id).eq("seite", s.id);
+        cb.disabled = false;
+        if (r.error) { cb.checked = !cb.checked; status.textContent = "nicht gespeichert"; }
+        else status.textContent = cb.checked ? "freigegeben" : "gesperrt";
+      });
+      z.appendChild(cb); z.appendChild(t); z.appendChild(status); k.appendChild(z);
+    });
+    k.appendChild(el("p", "klein", "Nur freigegebene Inhalte erscheinen nach der Anmeldung auf der Startseite. Passwörter änderst du im Supabase-Dashboard unter Authentication → Users."));
+    inhalt.appendChild(k);
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>

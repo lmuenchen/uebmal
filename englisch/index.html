@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Englisch-Schulaufgabe Unit 1</title>
 <meta name="robots" content="noindex,nofollow">
+<script src="../lib/supabase.js"></script>
+<script src="../config.js"></script>
+<script src="../konto.js"></script>
+<script>if(window.Uebmal)Uebmal.schuetze("englisch-sa1");</script>
 <style>
 /* Layout: eine Spalte wie ein Übungsheft; grüne Linie oben, gelber Textmarker für Lücken */
 :root{
@@ -581,6 +585,7 @@ function tile(code,title,sub,id,fn,wide){
   t.addEventListener("click",fn);return t;
 }
 function home(){
+  meldeRunde(false);
   stopSpeak();
   app.textContent="";
   var groups=[["Grammar","Grammar – G1 bis G7"],["Writing","Writing und Mediation"],["Text","Text Comprehension"],["Listening","Listening Comprehension"]];
@@ -628,9 +633,17 @@ function startVocab(v){
 function startNumbers(){
   run({id:"num",title:"Numbers 1–100",rule:"13–19 enden auf <b>-teen</b>, Zehner auf <b>-ty</b>. Zwischen Zehner und Einer steht ein Bindestrich: twenty<u>-</u>one. Achtung: <b>forty</b> (ohne u), <b>fifteen</b>, <b>fifty</b>, <b>eighteen</b> (nur ein t).",items:numberItems(),again:startNumbers});
 }
+function meldeRunde(fertig){
+  if(!S||S.gemeldet||!window.Uebmal)return;
+  if(!fertig&&S.done<1)return;
+  S.gemeldet=true;
+  try{window.Uebmal.melde({modul:S.cfg.id,titel:S.cfg.title,richtig:S.right,gesamt:fertig?S.total:S.done,dauer_s:Math.round((Date.now()-S.t0)/1000),abgeschlossen:!!fertig,fehler:S.fehler});}catch(e){}
+}
+function loesung(it){return it.t==="mc"?it.o[0]:(it.t==="in"?showAnswer(it):it.model);}
 function run(cfg){
+  meldeRunde(false);
   stopSpeak();
-  S={cfg:cfg,queue:cfg.items.map(function(i){return {item:i,retry:false};}),total:cfg.items.length,done:0,right:0,missed:[],selfCount:0};
+  S={cfg:cfg,queue:cfg.items.map(function(i){return {item:i,retry:false};}),total:cfg.items.length,done:0,right:0,missed:[],selfCount:0,t0:Date.now(),fehler:[],gemeldet:false};
   render();
 }
 function header(){
@@ -689,6 +702,9 @@ function advance(cur,ok){
   S.queue.shift();
   if(!cur.retry){
     S.done++;
+    var frage=String(cur.item.q).replace(/___/g,"\u2026");
+    if(cur.item.t==="self")S.fehler.push({art:"text",f:frage,a:String(cur.given||"").slice(0,600),l:loesung(cur.item),ok:!!ok});
+    else if(!ok)S.fehler.push({f:frage,a:String(cur.given||"").slice(0,200),l:loesung(cur.item)});
     if(ok)S.right++;
     else{S.missed.push(cur.item);S.queue.push({item:cur.item,retry:true});}
   }else if(!ok){
@@ -704,7 +720,7 @@ function renderMC(card,cur){
     var b=el("button","opt",o);b.type="button";
     b.addEventListener("click",function(){
       Array.prototype.forEach.call(box.children,function(x){x.disabled=true;if(x.textContent===correct)x.classList.add("right");});
-      var ok=o===correct;if(!ok)b.classList.add("wrong");
+      cur.given=o;var ok=o===correct;if(!ok)b.classList.add("wrong");
       finish(cur,ok,card,{});
     });
     box.appendChild(b);
@@ -725,7 +741,7 @@ function renderIN(card,cur){
     if(!input.value.trim()){input.focus();return;}
     if(input.disabled)return;
     input.disabled=true;b.disabled=true;b.hidden=true;
-    var ok=isRight(item,input.value);
+    cur.given=input.value;var ok=isRight(item,input.value);
     finish(cur,ok,card,{solution:showAnswer(item),override:true,always:true});
   });
   card.appendChild(form);
@@ -740,7 +756,7 @@ function renderSELF(card,cur){
   var show=el("button","btn","Musterlösung zeigen");show.type="button";
   nx.appendChild(show);card.appendChild(nx);
   show.addEventListener("click",function(){
-    show.hidden=true;
+    show.hidden=true;cur.given=ta.value;ta.readOnly=true;
     var fb=el("div","fb ok");
     fb.appendChild(el("b","big","So könnte es aussehen:"));
     fb.appendChild(el("span","sol",item.model));
@@ -755,6 +771,7 @@ function renderSELF(card,cur){
   });
 }
 function result(){
+  meldeRunde(true);
   var cfg=S.cfg, pct=Math.round(100*S.right/S.total);
   if(store.best[cfg.id]==null||pct>store.best[cfg.id]){store.best[cfg.id]=pct;save();}
   var c=el("div","card result");
