@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>uebmal.de</title>
+<link rel="stylesheet" href="stil.css">
+<script src="lib/supabase.js"></script>
+<script src="config.js"></script>
+<script src="konto.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="kopf">
+    <div>
+      <h1><span>üb</span> mal</h1>
+      <p class="sub" id="gruss">Kurze Übungsrunden für die Schule.</p>
+    </div>
+    <button class="knopf leise" id="abmelden" type="button" hidden>Abmelden</button>
+  </header>
+
+  <main id="inhalt"><p class="sub">Lädt …</p></main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var U = window.Uebmal, inhalt = document.getElementById("inhalt");
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function kachel(s) {
+    var a = el("a", "kachel"); a.href = s.pfad;
+    a.appendChild(el("span", "f", s.stufe)); a.appendChild(el("b", null, s.titel)); a.appendChild(el("small", null, s.text));
+    return a;
+  }
+  function zeigeKacheln(seiten, eltern) {
+    inhalt.textContent = "";
+    if (eltern) {
+      var g0 = el("div", "raster");
+      var a = el("a", "kachel breit"); a.href = "eltern/";
+      a.appendChild(el("span", "f", "Nur für Eltern")); a.appendChild(el("b", null, "Eltern-Ansicht"));
+      a.appendChild(el("small", null, "Was wurde geübt, wie gut lief es, was ist freigegeben"));
+      g0.appendChild(a); inhalt.appendChild(g0);
+    }
+    if (!seiten.length) {
+      inhalt.appendChild(el("p", "hinweis", "Für dich ist noch nichts freigeschaltet. Sag Papa Bescheid."));
+      return;
+    }
+    var faecher = [];
+    seiten.forEach(function (s) { if (faecher.indexOf(s.fach) < 0) faecher.push(s.fach); });
+    faecher.forEach(function (f) {
+      inhalt.appendChild(el("h2", null, f));
+      var g = el("div", "raster");
+      seiten.filter(function (s) { return s.fach === f; }).forEach(function (s) { g.appendChild(kachel(s)); });
+      inhalt.appendChild(g);
+    });
+  }
+  function zeigeAnmeldung(meldung) {
+    inhalt.textContent = "";
+    var f = el("form", "anmeldung"); f.setAttribute("autocomplete", "on");
+    f.appendChild(el("h2", null, "Anmelden"));
+    var l1 = el("label", null, "Benutzername"); l1.setAttribute("for", "name");
+    var i1 = el("input"); i1.id = "name"; i1.name = "username"; i1.type = "text"; i1.required = true;
+    i1.setAttribute("autocomplete", "username"); i1.setAttribute("autocapitalize", "off"); i1.setAttribute("autocorrect", "off"); i1.setAttribute("spellcheck", "false");
+    var l2 = el("label", null, "Passwort"); l2.setAttribute("for", "pw");
+    var i2 = el("input"); i2.id = "pw"; i2.name = "password"; i2.type = "password"; i2.required = true; i2.setAttribute("autocomplete", "current-password");
+    var zeig = el("label", "haken"); var cb = el("input"); cb.type = "checkbox"; cb.id = "pwzeigen";
+    cb.addEventListener("change", function () { i2.type = cb.checked ? "text" : "password"; });
+    zeig.appendChild(cb); zeig.appendChild(document.createTextNode(" Passwort anzeigen"));
+    var fehler = el("p", "fehler"); fehler.setAttribute("role", "alert"); fehler.hidden = !meldung; fehler.textContent = meldung || "";
+    var b = el("button", "knopf", "Anmelden"); b.type = "submit";
+    [l1, i1, l2, i2, zeig, fehler, b].forEach(function (x) { f.appendChild(x); });
+    f.addEventListener("submit", async function (ev) {
+      ev.preventDefault();
+      b.disabled = true; b.textContent = "Moment …"; fehler.hidden = true;
+      try {
+        await U.anmelden(i1.value, i2.value);
+        start();
+      } catch (e) {
+        var m = String((e && e.message) || "");
+        fehler.textContent = /invalid|credentials/i.test(m) ? "Benutzername oder Passwort stimmt nicht."
+          : "Die Anmeldung hat nicht geklappt. Prüfe die Internetverbindung und versuch es noch einmal.";
+        fehler.hidden = false; b.disabled = false; b.textContent = "Anmelden";
+      }
+    });
+    inhalt.appendChild(f);
+    i1.focus();
+  }
+  async function start() {
+    if (!U || !U.aktiv) { zeigeKacheln(U ? U.SEITEN : [], false); return; }
+    var sitz = await U.sitzung();
+    if (!sitz) { zeigeAnmeldung(); return; }
+    U.user = sitz.user;
+    var knopf = document.getElementById("abmelden");
+    knopf.hidden = false; knopf.onclick = function () { U.abmelden(); };
+    try {
+      var p = await U.ladeProfil(sitz.user.id);
+      if (!p) { inhalt.textContent = ""; inhalt.appendChild(el("p", "hinweis", "Zu diesem Konto fehlt das Profil. Sag Papa Bescheid.")); return; }
+      U.profil = p;
+      if (!(U.klassisch && U.klassisch(p))) {   /* alle anderen Konten bekommen die neue Oberfläche */
+        try { localStorage.removeItem("uebmal-aussehen"); } catch (e) {}
+        location.replace("./" + location.search); return;
+      }
+      document.getElementById("gruss").textContent = "Hallo " + p.anzeigename + "!";
+      var eltern = p.rolle === "eltern";
+      var frei = eltern ? U.SEITEN.map(function (s) { return s.id; }) : await U.ladeFreigaben(sitz.user.id);
+      var seiten = U.SEITEN.filter(function (s) { return frei.indexOf(s.id) >= 0; });
+      var weiter = new URLSearchParams(location.search).get("weiter");
+      if (weiter && seiten.some(function (s) { return s.pfad === weiter; })) { location.replace(weiter); return; }
+      zeigeKacheln(seiten, eltern);
+      U.nachreichen();
+    } catch (e) {
+      inhalt.textContent = "";
+      inhalt.appendChild(el("p", "hinweis", "Keine Verbindung. Prüfe das Internet und lade die Seite neu."));
+    }
+  }
+  start();
+})();
+</script>
+</body>
+</html>

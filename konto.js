@@ -16,8 +16,12 @@
     { id: "englisch-sa1", fach: "Englisch", stufe: "Klasse 5 · Green Line 1", titel: "Schulaufgabe Unit 1",
       text: "Grammar, Vocabulary, Writing, Listening", pfad: "englisch/" },
     { id: "mathe-riesenzahlen", fach: "Mathe", stufe: "Klasse 5", titel: "Mission Riesenzahlen",
-      text: "Große Zahlen, Runden, Zahlenstrahl, negative Zahlen", pfad: "mathe/" }
+      text: "Große Zahlen, Runden, Zahlenstrahl, negative Zahlen", pfad: "mathe/" },
+    { id: "latein-campus1", fach: "Latein", stufe: "Klasse 5 · Campus B1", titel: "Kapitel 1–9",
+      text: "Vokabeln, Formen, Sätze, Probe-Schulaufgabe", pfad: "latein/" }
   ];
+  /* Konten, die die bisherige (klassische) Oberfläche sehen statt des Abenteuer-Looks */
+  var KLASSISCH = ["benedikt", "maria-cristina"];
 
   function seite(id) { return SEITEN.filter(function (s) { return s.id === id; })[0] || null; }
   function email(name) { return String(name).trim().toLowerCase().replace(/[^a-z0-9._-]/g, "") + "@" + DOMAIN; }
@@ -28,6 +32,7 @@
   var U = {
     aktiv: aktiv, sb: sb, SEITEN: SEITEN, wurzel: wurzel, seite: seite, email: email,
     user: null, profil: null, kontext: null,
+    klassisch: function (p) { return !!p && KLASSISCH.indexOf(p.benutzername) >= 0; },
 
     sitzung: async function () {
       if (!aktiv) return null;

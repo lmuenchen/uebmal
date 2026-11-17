@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Latein · Campus B1</title>
+<meta name="robots" content="noindex,nofollow">
+<script src="../lib/supabase.js"></script>
+<script src="../config.js"></script>
+<script src="../konto.js"></script>
+<script>if(window.Uebmal)window.UEBMAL_SCHUTZ=Uebmal.schuetze("latein-campus1");</script>
+<style>
+/* Aussehen wie die bisherige Oberfläche von uebmal.de (stil.css) */
+:root{
+  --paper:#f4f7f3; --card:#ffffff; --ink:#16302b; --muted:#5b6f6a; --line:#d5e0db;
+  --green:#1f8a5b; --green-ink:#ffffff; --marker:#ffe36e; --marker-ink:#3a3200;
+  --ok:#17794b; --ok-bg:#dff3e7; --mid:#8a6100; --mid-bg:#fff1c9; --bad:#b3372e; --bad-bg:#fbe4e1; --soft:#e8f0ec;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#0f1b18; --card:#182823; --ink:#e8f1ed; --muted:#9db3ac; --line:#2c423b;
+    --green:#3fbf86; --green-ink:#062216; --marker:#e9c93d; --marker-ink:#1f1a00;
+    --ok:#6fdca6; --ok-bg:#173b2b; --mid:#f0c75a; --mid-bg:#3d3212; --bad:#ff9a8f; --bad-bg:#472320; --soft:#20342e;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:18px;line-height:1.45}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 56px}
+.kopf{border-top:8px solid var(--green);padding:22px 0 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+h1{font-size:2rem;line-height:1.1;margin:0}
+h1 span{background:var(--marker);color:var(--marker-ink);padding:0 8px;border-radius:6px}
+h2{font-size:1.15rem;margin:28px 0 10px}
+h2.gross{font-size:1.5rem;margin-top:12px;line-height:1.2}
+.sub{color:var(--muted);margin:6px 0 0}
+.hinweis{background:var(--soft);border-left:5px solid var(--green);border-radius:8px;padding:12px 14px;margin:18px 0}
+.hinweis .knopf{margin-left:6px}
+.raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
+a.kachel{display:flex;flex-direction:column;gap:4px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;color:inherit;text-decoration:none;min-height:96px}
+a.kachel:hover,a.kachel:focus-visible{border-color:var(--green);outline:none}
+a.kachel b{font-size:1.1rem}
+a.kachel small{color:var(--muted)}
+a.kachel .f{color:var(--green);font-weight:700;font-size:.85rem}
+a.kachel.breit{grid-column:1/-1;background:var(--green);color:var(--green-ink);border-color:var(--green);min-height:0}
+a.kachel.breit .f,a.kachel.breit small{color:var(--green-ink)}
+a.kachel.zu{border-style:dashed;opacity:.7}
+.knopf{font:inherit;font-weight:700;background:var(--green);color:var(--green-ink);border:0;border-radius:12px;padding:12px 20px;cursor:pointer}
+.knopf.leise{background:none;color:var(--ink);border:1.5px solid var(--line);font-weight:400;padding:8px 14px}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.leiste{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 4px}
+.leiste select{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.zahlen{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.zahl{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+.zahl b{display:block;font-size:1.6rem;line-height:1.15;font-variant-numeric:tabular-nums}
+.zahl span{color:var(--muted);font-size:.85rem}
+.karte{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px}
+.rollen{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.8rem;color:var(--muted);font-weight:700;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.neu td,tr.neu th{background:var(--mid-bg)}
+.pille{display:inline-block;border-radius:999px;padding:1px 9px;font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums}
+.pille.gut{background:var(--ok-bg);color:var(--ok)}
+.pille.mittel{background:var(--mid-bg);color:var(--mid)}
+.pille.schwach{background:var(--bad-bg);color:var(--bad)}
+.pille.grau{background:var(--soft);color:var(--muted)}
+.text-eintrag{border-top:1px solid var(--line);padding:10px 0}
+.text-eintrag:first-child{border-top:0}
+.text-eintrag .frage{color:var(--muted);font-size:.9rem}
+.klein{font-size:.85rem;color:var(--muted);font-weight:400}
+summary{cursor:pointer;font-weight:700}
+
+/* Trainer */
+.faecher{display:flex;gap:3px;height:26px;margin-top:10px;border-radius:8px;overflow:hidden}
+.faecher i{display:flex;align-items:center;justify-content:center;min-width:0;font-style:normal;font-size:.72rem;white-space:nowrap;overflow:hidden;color:var(--ink);background:var(--line)}
+.faecher i span{padding:0 4px}
+.faecher .f1{background:var(--bad-bg)} .faecher .f2{background:var(--mid-bg)} .faecher .f3{background:var(--soft)}
+.faecher .f4{background:var(--ok-bg)} .faecher .f5{background:var(--green);color:var(--green-ink)}
+.rkopf{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:8px;flex-wrap:wrap}
+.balken{height:8px;background:var(--line);border-radius:99px;margin:10px 0 14px;overflow:hidden}
+.balken i{display:block;height:100%;background:var(--green);border-radius:99px}
+.frage{padding:18px}
+.ftext{font-size:1.2rem;margin:10px 0 16px}
+.ftext small{font-size:.85rem;color:var(--muted)}
+.de{color:var(--muted);font-style:italic}
+.satz{font-size:1.35rem;font-family:Georgia,"Times New Roman",serif}
+[lang=la]{font-family:Georgia,"Times New Roman",serif}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts.viele{grid-template-columns:repeat(4,1fr)}
+@media (max-width:520px){.opts{grid-template-columns:1fr}.opts.viele{grid-template-columns:1fr 1fr}}
+.opt,.wort{font:inherit;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;min-height:48px}
+.opt:hover:not(:disabled),.wort:hover:not(:disabled){border-color:var(--green)}
+.opt[aria-pressed=true]{border-color:var(--green);background:var(--soft);font-weight:700}
+.opt.ok,.wort.ok,input.ok,.ablage.ok{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);font-weight:700}
+.opt.nein,.wort.nein,input.nein,.ablage.nein{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.opt:disabled,.wort:disabled{cursor:default}
+.gitter{margin-bottom:14px}
+.gitter th{font-size:.95rem;color:var(--ink);vertical-align:middle}
+.gitter td{padding:5px}
+.gitter .opt{width:100%;text-align:center;padding:9px 6px;min-height:44px}
+.wort{font-family:Georgia,"Times New Roman",serif;font-size:1.25rem;padding:8px 14px;margin:4px 2px}
+.tippsatz{line-height:2.4}
+.ablage{min-height:70px;border:2px dashed var(--line);border-radius:12px;padding:8px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center}
+.vorrat{margin-bottom:14px}
+.vorrat .wort:disabled{opacity:.25}
+.tform{display:flex;gap:10px;flex-wrap:wrap}
+.tform input{flex:1;min-width:180px;font:inherit;font-size:1.25rem;font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:11px 13px}
+#rueck{margin-top:16px}
+#rueck .gut,#rueck .schlecht{border-radius:10px;padding:10px 12px;margin-bottom:12px}
+#rueck .gut{background:var(--ok-bg);color:var(--ok)}
+#rueck .schlecht{background:var(--bad-bg);color:var(--bad)}
+#rueck span,#rueck small{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="kopf">
+    <div>
+      <h1><span>üb</span> mal · Latein</h1>
+      <p class="sub"><a href="../" style="color:inherit">← uebmal.de</a> · Klasse 5 · Campus B1 · Kapitel 1–9</p>
+    </div>
+  </header>
+  <main id="app"></main>
+</div>
+<script>
+/* üb mal · Latein – Stoff zu Campus B1, Kapitel 1–9 (Lernwörter, Formen, eigene Übungssätze) */
+"use strict";
+
+/* Kapitel | Latein | Deutsch | Art
+   na = a-Deklination, no = o-Deklination, ve = e-Konjugation, va = a-Konjugation, x = sonstiges
+   Zusatz: p = Person (kann man anreden), s = nicht in Formen-Übungen */
+var VOK_ROH = [
+"1|puella|das Mädchen, die Freundin|na:p","1|serva|die Sklavin, die Dienerin|na:p","1|silva|der Wald|na",
+"1|via|der Weg, die Straße|na","1|vīlla|das Haus, das Landhaus|na","1|avus|der Großvater|no:p",
+"1|campus|das Feld, der freie Platz|no","1|equus|das Pferd|no","1|mūrus|die Mauer|no",
+"1|servus|der Sklave, der Diener|no:p","1|vīcus|das Dorf, die Gasse|no","1|et|und, auch|x",
+
+"2|esse|sein, sich befinden|x","2|est|er (sie, es) ist|x","2|sunt|sie sind|x","2|rīdēre|lachen, auslachen|ve",
+"2|nōn|nicht|x","2|cūr?|warum?|x","2|pārēre|gehorchen|ve","2|monēre|mahnen, ermahnen|ve",
+"2|dēbēre|müssen, sollen|ve","2|quid?|was?|x","2|timēre|fürchten, Angst haben|ve","2|oculus|das Auge|no",
+"2|dolēre|schmerzen, wehtun|ve","2|nunc|nun, jetzt|x","2|tacēre|schweigen, verschweigen|ve",
+
+"3|hīc|hier|x","3|dominus|der Herr|no:p","3|ibī|dort|x","3|sedēre|sitzen|ve","3|sed|aber, sondern|x",
+"3|respondēre|antworten|ve","3|quis?|wer?|x","3|augēre|vergrößern, vermehren|ve","3|neque|und nicht, auch nicht|x",
+"3|neque … neque|weder … noch|x","3|terrēre|erschrecken|ve","3|lingua|die Sprache, die Rede|na","3|nam|denn, nämlich|x",
+
+"4|gaudēre|sich freuen|ve","4|amīcus|der Freund|no:p","4|docēre|lehren, unterrichten|ve",
+"4|studēre|sich bemühen, studieren|ve","4|tabula|die (Schreib-)Tafel, das Gemälde|na",
+"4|tenēre|halten, festhalten, besitzen|ve","4|praebēre|geben, hinhalten|ve","4|iam|schon, bereits; nun|x",
+"4|prīmō|zuerst|x","4|tum|da, dann, darauf, damals|x","4|rēctē|richtig, zu Recht|x","4|nōn iam|nicht mehr|x",
+"4|saepe|oft|x","4|numquam|niemals|x",
+
+"5|sonus|der Ton, der Klang, das Geräusch|no","5|latēre|verborgen sein|ve","5|subitō|plötzlich|x",
+"5|gladius|das Schwert|no","5|torquēre|drehen; quälen|ve","5|scelerātus|der Verbrecher|no:p",
+"5|flēre|weinen, beweinen|ve","5|placēre|gefallen|ve","5|cui?|wem?|x","5|statim|sofort|x",
+"5|etiam|auch, sogar|x","5|iterum|wiederum, zum zweiten Mal|x","5|itaque|deshalb|x","5|tantum|nur|x",
+
+"6|cibus|die Nahrung, die Speise, das Futter|no:s","6|habēre|haben, halten|ve","6|complēre|anfüllen, auffüllen|ve",
+"6|cōpia|die Menge, der Vorrat|na","6|aqua|das Wasser|na","6|ventus|der Wind|no","6|dēlēre|zerstören, vernichten|ve",
+"6|adhūc|bis jetzt, noch|x","6|populus|das Volk|no","6|deus|der Gott, die Gottheit|no:s",
+"6|profectō|sicherlich, tatsächlich|x","6|grātia|der Dank|na:s","6|grātiam habēre|danken, dankbar sein|x","6|semper|immer|x",
+
+"7|valēre|gesund sein, stark sein, Einfluss haben|ve","7|valē! valēte!|leb wohl! lebt wohl!|x","7|lacrima|die Träne|na",
+"7|vidēre|sehen|ve","7|movēre|bewegen, beeindrucken|ve","7|tandem|endlich|x","7|mox|bald|x",
+"7|turba|die (Menschen-)Menge|na","7|patēre|offenstehen|ve","7|īnsula|die Insel; der Wohnblock|na",
+"7|amīca|die Freundin|na:p","7|laetitia|die Freude|na:s",
+
+"8|domina|die Herrin, die Dame|na:p","8|rogāre|fragen, bitten|va","8|amāre|lieben|va",
+"8|parāre|(vor)bereiten, vorhaben; erwerben|va","8|labōrāre|arbeiten, sich anstrengen|va",
+"8|vocāre|nennen, benennen, rufen|va","8|properāre|eilen, sich beeilen|va","8|cēna|die Mahlzeit, das Essen|na",
+"8|fīlia|die Tochter|na:p","8|intrāre|betreten, eintreten|va","8|mēnsa|der (Ess-)Tisch|na",
+"8|ōrnāre|ausstatten, schmücken|va","8|sīc|so|x","8|dēlectāre|erfreuen, unterhalten|va",
+
+"9|familia|die Familie|na","9|bene|gut|x","9|cēnāre|essen|va","9|spectāre|betrachten, anschauen, hinsehen|va",
+"9|unde?|woher?|x","9|diū|lange (Zeit)|x","9|dubitāre|zweifeln; zögern|va","9|Rōmānus|der Römer|no:p",
+"9|pūgna|der Kampf|na","9|pūgnāre|kämpfen|va","9|superāre|besiegen, überwinden, übertreffen|va",
+"9|patria|die Heimat|na","9|prōvincia|die Provinz|na","9|dolus|die List, die Täuschung|no",
+"9|iniūria|das Unrecht, die Beleidigung|na","9|captīvus|der Kriegsgefangene|no:p","9|fīlius|der Sohn|no:s"
+];
+
+/* Eigennamen, die in den Sätzen vorkommen: Schlüssel -> [Stamm, Deklination, Kapitel] */
+var NAMEN = { Cornelia: ["Cornēli", "a", 1], Aeolus: ["Aeol", "o", 6] };
+
+/* Endungen */
+var END = {
+  a: { N1:"a", G1:"ae", D1:"ae", A1:"am", B1:"ā", V1:"a", N2:"ae", G2:"ārum", D2:"īs", A2:"ās", B2:"īs", V2:"ae" },
+  o: { N1:"us", G1:"ī", D1:"ō", A1:"um", B1:"ō", V1:"e", N2:"ī", G2:"ōrum", D2:"īs", A2:"ōs", B2:"īs", V2:"ī" }
+};
+var VEND = {
+  e: { "1s":"eō", "2s":"ēs", "3s":"et", "1p":"ēmus", "2p":"ētis", "3p":"ent", Is:"ē", Ip:"ēte", inf:"ēre" },
+  a: { "1s":"ō", "2s":"ās", "3s":"at", "1p":"āmus", "2p":"ātis", "3p":"ant", Is:"ā", Ip:"āte", inf:"āre" }
+};
+var ESSE = { "1s":"sum", "2s":"es", "3s":"est", "1p":"sumus", "2p":"estis", "3p":"sunt", Is:"es", Ip:"este", inf:"esse" };
+
+/* Ab welchem Kapitel ist was bekannt? */
+var KASUS_AB = { N: 1, A: 3, D: 5, V: 6, G: 7, B: 9 };
+var KASUS_NAME = { N: "Nominativ", G: "Genitiv", D: "Dativ", A: "Akkusativ", B: "Ablativ", V: "Vokativ" };
+var KASUS_FRAGE = { N: "Wer oder was?", G: "Wessen?", D: "Wem?", A: "Wen oder was?", B: "Womit? Wodurch?", V: "Anrede" };
+var PERSON_NAME = { "1s":"1. Person Singular (ich)", "2s":"2. Person Singular (du)", "3s":"3. Person Singular (er, sie, es)",
+  "1p":"1. Person Plural (wir)", "2p":"2. Person Plural (ihr)", "3p":"3. Person Plural (sie)",
+  Is:"Imperativ Singular (Befehl an einen)", Ip:"Imperativ Plural (Befehl an mehrere)", inf:"Infinitiv (Grundform)" };
+
+/* Übungssätze: Kapitel | Bausteine | Deutsch | Satzzeichen
+   Baustein = Rolle:Wort:Form.  Rollen: S Subjekt, P Prädikat, O Akkusativobjekt, D Dativobjekt,
+   G Genitiv-Attribut, B Adverbiale im Ablativ, N Prädikatsnomen, V Anrede, X sonstiges Wort */
+var SATZ_ROH = [
+"2|S:servus:N1 P:ridere:3s|Der Sklave lacht.",
+"2|S:puella:N2 P:tacere:3p|Die Mädchen schweigen.",
+"2|S:avus:N1 X:non P:ridere:3s|Der Großvater lacht nicht.",
+"2|S:serva:N2 P:parere:3p|Die Sklavinnen gehorchen.",
+"2|S:oculus:N2 P:dolere:3p|Die Augen tun weh.",
+"2|S:Cornelia:N1 N:puella:N1 P:esse:3s|Cornelia ist ein Mädchen.",
+"2|S:servus:N2 X:nunc P:timere:3p|Die Sklaven haben jetzt Angst.",
+
+"3|S:avus:N1 O:servus:A1 P:monere:3s|Der Großvater ermahnt den Sklaven.",
+"3|S:puella:N2 O:equus:A2 P:timere:3p|Die Mädchen fürchten die Pferde.",
+"3|S:dominus:N1 O:serva:A2 P:terrere:3s|Der Herr erschreckt die Sklavinnen.",
+"3|S:servus:N2 O:murus:A1 P:augere:3p|Die Sklaven vergrößern die Mauer.",
+"3|S:serva:N1 O:dominus:A1 X:non P:timere:3s|Die Sklavin fürchtet den Herrn nicht.",
+"3|S:lingua:N1 O:puella:A1 P:terrere:3s|Die Rede erschreckt das Mädchen.",
+"3|S:avus:N1 O:puella:A2 P:monere:3s|Der Großvater ermahnt die Mädchen.",
+
+"4|O:tabula:A1 P:tenere:1s|Ich halte die Tafel.",
+"4|O:amicus:A2 P:docere:1p|Wir unterrichten die Freunde.",
+"4|X:cur O:avus:A1 P:timere:2p|Warum fürchtet ihr den Großvater?|?",
+"4|S:amicus:N2 X:saepe P:gaudere:3p|Die Freunde freuen sich oft.",
+"4|X:numquam O:servus:A2 P:terrere:2s|Du erschreckst niemals die Sklaven.",
+"4|N:amicus:N2 P:esse:1p|Wir sind Freunde.",
+
+"5|S:servus:N1 D:dominus:D1 P:respondere:3s|Der Sklave antwortet dem Herrn.",
+"5|S:serva:N1 D:puella:D2 O:tabula:A2 P:praebere:3s|Die Sklavin gibt den Mädchen die Tafeln.",
+"5|S:equus:N2 D:avus:D1 P:placere:3p|Die Pferde gefallen dem Großvater.",
+"5|S:servus:N2 D:dominus:D2 P:parere:3p|Die Sklaven gehorchen den Herren.",
+"5|S:gladius:N1 D:amicus:D2 P:placere:3s|Das Schwert gefällt den Freunden.",
+"5|D:puella:D1 O:gladius:A1 X:non P:praebere:1s|Ich gebe dem Mädchen das Schwert nicht.",
+"5|S:sceleratus:N1 O:servus:A1 P:torquere:3s|Der Verbrecher quält den Sklaven.",
+
+"6|P:praebere:Is D:equus:D2 O:cibus:A1 V:servus:V1|Gib den Pferden Futter, Sklave!|!",
+"6|S:ventus:N2 O:silva:A2 P:delere:3p|Die Winde zerstören die Wälder.",
+"6|S:populus:N1 D:deus:D1 O:gratia:A1 P:habere:3s|Das Volk dankt dem Gott.",
+"6|S:servus:N2 O:copia:A2 P:complere:3p|Die Sklaven füllen die Vorräte auf.",
+"6|P:tacere:Ip V:puella:V2|Schweigt, Mädchen!|!",
+
+"7|S:serva:N1 G:amica:G1 O:equus:A1 P:timere:3s|Die Sklavin der Freundin fürchtet das Pferd.",
+"7|S:lacrima:N2 G:puella:G1 O:avus:A1 P:movere:3p|Die Tränen des Mädchens bewegen den Großvater.",
+"7|O:villa:A1 G:dominus:G1 P:videre:1p|Wir sehen das Landhaus des Herrn.",
+"7|S:turba:N1 G:servus:G2 P:tacere:3s|Die Menge der Sklaven schweigt.",
+"7|S:laetitia:N1 G:amicus:G2 O:puella:A2 P:movere:3s|Die Freude der Freunde beeindruckt die Mädchen.",
+"7|S:equus:N2 G:avus:G1 D:puella:D2 P:placere:3p|Die Pferde des Großvaters gefallen den Mädchen.",
+
+"8|S:domina:N1 O:serva:A2 P:vocare:3s|Die Herrin ruft die Sklavinnen.",
+"8|S:servus:N2 O:cena:A1 P:parare:3p|Die Sklaven bereiten das Essen vor.",
+"8|S:filia:N1 G:dominus:G1 O:mensa:A1 P:ornare:3s|Die Tochter des Herrn schmückt den Tisch.",
+"8|O:amica:A2 P:amare:1p|Wir lieben die Freundinnen.",
+"8|X:cur X:non P:laborare:2p V:servus:V2|Warum arbeitet ihr nicht, Sklaven?|?",
+"8|S:cena:N1 O:domina:A1 P:delectare:3s|Das Essen erfreut die Herrin.",
+
+"9|S:Aeolus:N1 O:servus:A2 B:ventus:B1 P:terrere:3s|Äolus erschreckt die Sklaven durch den Wind.",
+"9|S:Romanus:N2 O:populus:A2 B:gladius:B2 P:superare:3p|Die Römer besiegen die Völker mit Schwertern.",
+"9|S:filia:N2 O:mensa:A1 B:tabula:B2 P:ornare:3p|Die Töchter schmücken den Tisch mit Gemälden.",
+"9|S:captivus:N1 O:dominus:A1 B:dolus:B1 P:superare:3s|Der Kriegsgefangene überwindet den Herrn durch eine List.",
+"9|S:domina:N1 O:familia:A1 B:cena:B1 P:delectare:3s|Die Herrin erfreut die Familie mit dem Essen.",
+"9|S:servus:N2 O:equus:A2 B:aqua:B1 P:delectare:3p|Die Sklaven erfreuen die Pferde mit Wasser."
+];
+
+/* Wort-Verwandte: Wort | Sprache | lateinisches Lernwort (wie in VOK_ROH) */
+var VERWANDT_ROH = [
+"Camping|Deutsch|campus","Villa|Deutsch|vīlla","Quiz|Deutsch|quis?","Korrespondenz|Deutsch|respondēre",
+"Auktion|Deutsch|augēre","Terror|Deutsch|terrēre","Dozent|Deutsch|docēre","Student|Deutsch|studēre",
+"Tabelle|Deutsch|tabula","Gaudi|Deutsch|gaudēre","amigo|Spanisch|amīcus","Sonate|Deutsch|sonus",
+"latent|Deutsch|latēre","Gladiator|Deutsch|gladius","komplett|Deutsch|complēre","Kopie|Deutsch|cōpia",
+"Aquarium|Deutsch|aqua","Ventilator|Deutsch|ventus","populär|Deutsch|populus","grazie|Italienisch|grātia",
+"siempre|Spanisch|semper","to have|Englisch|habēre","Video|Deutsch|vidēre","to move|Englisch|movēre",
+"Trubel|Deutsch|turba","isola|Italienisch|īnsula","Labor|Deutsch|labōrāre","Vokal|Deutsch|vocāre",
+"Amateur|Deutsch|amāre","Mensa|Deutsch|mēnsa","reparieren|Deutsch|parāre","nunca|Spanisch|numquam",
+"to doubt|Englisch|dubitāre","Provinz|Deutsch|prōvincia","family|Englisch|familia"
+];
+
+/* Kapitel-Übersicht: Thema und kurze Erklärung in eigenen Worten */
+var KAPITEL = [
+null,
+{ thema: "Substantive im Nominativ", art: "nomen",
+  text: "Lateinische Substantive haben ein Geschlecht und gehören zu einer Deklination. Wörter auf -a wie serva gehören zur a-Deklination, Wörter auf -us wie servus zur o-Deklination. Einen Artikel gibt es nicht: serva heißt „die Sklavin“ oder „eine Sklavin“." },
+{ thema: "Verben: 3. Person und Infinitiv", art: "verb",
+  text: "Verben wie ridere gehören zur e-Konjugation. Die 3. Person Singular endet auf -t, die 3. Person Plural auf -nt. Subjekt und Prädikat passen in der Zahl zusammen: Servus ridet. Servi rident." },
+{ thema: "Akkusativ", art: "nomen",
+  text: "Der Akkusativ ist der 4. Fall. Du fragst „Wen oder was?“. Das Prädikat steht im Lateinischen meist am Satzende. Fehlt ein Subjekt, steckt es in der Endung des Verbs: Rident heißt „Sie lachen“." },
+{ thema: "Verben: alle Personen", art: "verb",
+  text: "Jetzt kommen ich, du, wir und ihr dazu. Die Endungen sind -o, -s, -t, -mus, -tis, -nt. Das Hilfsverb esse geht eigene Wege und muss extra gelernt werden." },
+{ thema: "Dativ", art: "nomen",
+  text: "Der Dativ ist der 3. Fall. Du fragst „Wem?“. Manche Verben haben zwei Objekte: Servus domino tabulam praebet – der Sklave gibt dem Herrn die Tafel." },
+{ thema: "Imperativ und Vokativ", art: "befehl",
+  text: "Mit dem Imperativ gibst du Befehle: Ride! (an einen) und Ridete! (an mehrere). Der Vokativ ist die Anrede. Er sieht aus wie der Nominativ. Nur aus -us wird -e: Tace, serve!" },
+{ thema: "Genitiv", art: "nomen",
+  text: "Der Genitiv ist der 2. Fall. Du fragst „Wessen?“. Er gehört als Attribut zu einem anderen Substantiv: equus avi ist das Pferd des Großvaters." },
+{ thema: "Verben der a-Konjugation", art: "verb",
+  text: "Verben wie rogare haben ein a im Stamm. Die Endungen sind dieselben wie bei der e-Konjugation. Achtung bei „ich“: Es heißt rogo, nicht rogao." },
+{ thema: "Ablativ", art: "nomen",
+  text: "Der Ablativ ist der 6. Fall. Im Deutschen gibt es ihn nicht. Du fragst „Womit?“ oder „Wodurch?“ und übersetzt mit „mit“ oder „durch“: Aeolus servos vento terret." }
+];
+
+
+/* üb mal · Latein – Formenbildung und Aufgaben-Erzeugung (ohne Oberfläche) */
+"use strict";
+
+function plain(s) { return s.normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+function schluessel(s) { return plain(s).toLowerCase().replace(/[?!.,…]/g, "").replace(/\s+/g, " ").trim(); }
+function zufall(n) { return Math.floor(Math.random() * n); }
+function wahl(a) { return a[zufall(a.length)]; }
+function misch(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = zufall(i + 1); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function gross(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function einzig(a) { return a.filter(function (x, i) { return a.indexOf(x) === i; }); }
+
+var VOK = VOK_ROH.map(function (z, i) {
+  var t = z.split("|"), art = t[3].split(":");
+  return { id: i, k: +t[0], la: t[1], de: t[2], art: art[0], zus: art[1] || "" };
+});
+var NOMEN = {}, VERB = { esse: { esse: true, k: 2, la: "esse", de: "sein, sich befinden" } };
+VOK.forEach(function (v) {
+  if (v.art === "na" || v.art === "no") {
+    var d = v.art === "na" ? "a" : "o";
+    NOMEN[schluessel(v.la)] = { key: schluessel(v.la), stamm: v.la.slice(0, d === "a" ? -1 : -2), d: d, k: v.k,
+      person: v.zus === "p", drill: v.zus !== "s", la: v.la, de: v.de };
+  }
+  if (v.art === "ve" || v.art === "va") {
+    VERB[schluessel(v.la)] = { key: schluessel(v.la), basis: v.la.slice(0, -3), c: v.art === "ve" ? "e" : "a", k: v.k, la: v.la, de: v.de };
+  }
+});
+Object.keys(NAMEN).forEach(function (n) {
+  NOMEN[n.toLowerCase()] = { key: n.toLowerCase(), stamm: NAMEN[n][0], d: NAMEN[n][1], k: NAMEN[n][2], name: true, drill: false, la: n, de: n };
+});
+
+function nomenForm(key, code) { var n = NOMEN[key]; return n.stamm + END[n.d][code]; }
+/* In Sätzen ohne Längenstriche – nur das lange -ā des Ablativs bleibt markiert, wie im Buch. */
+function nomenImSatz(key, code) {
+  var n = NOMEN[key];
+  return (n.d === "a" && code === "B1") ? plain(n.stamm) + "ā" : plain(nomenForm(key, code));
+}
+function verbForm(key, code) { var v = VERB[key]; return v.esse ? ESSE[code] : v.basis + VEND[v.c][code]; }
+
+var SAETZE = SATZ_ROH.map(function (z, i) {
+  var t = z.split("|");
+  return { id: i, k: +t[0], de: t[2], zeichen: t[3] || ".", tok: t[1].split(" ").map(function (b) {
+    var p = b.split(":");
+    var typ = p[0] === "X" ? "x" : /^[NGDABV][12]$/.test(p[2]) ? "n" : "v";
+    return { r: p[0], key: typ === "x" ? p[1] : p[1].toLowerCase(), code: p[2] || "", typ: typ };
+  }) };
+});
+function wortVon(t, code) {
+  code = code || t.code;
+  return t.typ === "x" ? t.key : t.typ === "n" ? nomenImSatz(t.key, code) : plain(verbForm(t.key, code));
+}
+/* Wörter eines Satzes; ersatz = {Index: anderes Wort} */
+function satzWoerter(s, ersatz) {
+  return s.tok.map(function (t, i) { var w = ersatz && ersatz[i] != null ? ersatz[i] : wortVon(t); return i === 0 ? gross(w) : w; });
+}
+function satzText(s, ersatz) {
+  var w = satzWoerter(s, ersatz), aus = "";
+  s.tok.forEach(function (t, i) { aus += (i ? (t.r === "V" ? ", " : " ") : "") + w[i]; });
+  return aus + s.zeichen;
+}
+function andereZahl(code) { return code.charAt(0) + (code.charAt(1) === "1" ? "2" : code.charAt(1) === "2" ? "1" : code.charAt(1) === "s" ? "p" : "s"); }
+
+var ROLLE = { S: "das Subjekt (Wer oder was?)", P: "das Prädikat", O: "das Akkusativobjekt (Wen oder was?)",
+  D: "das Dativobjekt (Wem?)", G: "das Genitiv-Attribut (Wessen?)", B: "die Adverbiale (Womit? Wodurch?)",
+  N: "das Prädikatsnomen", V: "die Anrede (Vokativ)" };
+var ROLLE_KURZ = { S: "Subjekt", P: "Prädikat", O: "Akkusativobjekt", D: "Dativobjekt", G: "Genitiv-Attribut", B: "Adverbiale", N: "Prädikatsnomen", V: "Anrede" };
+
+/* Ohne Wiederholung ziehen, solange der Vorrat reicht */
+function ziehe(ctx, name, arr) {
+  ctx.benutzt = ctx.benutzt || {};
+  var b = ctx.benutzt[name] = ctx.benutzt[name] || [];
+  var frei = arr.filter(function (x) { return b.indexOf(x) < 0; });
+  if (!frei.length) { b.length = 0; frei = arr; }
+  var x = wahl(frei); b.push(x); return x;
+}
+function saetzeBis(ctx, filter) {
+  var a = SAETZE.filter(function (s) { return s.k <= ctx.maxK && (!filter || filter(s)); });
+  if (ctx.kap) { var nur = a.filter(function (s) { return s.k === ctx.kap; }); if (nur.length >= 3) a = nur; }
+  return a;
+}
+function gruppe(v) { return v.art === "x" ? "x" : v.art.charAt(0); }
+
+/* ---------- Aufgaben ---------- */
+
+function genVokabel(ctx, v, stufe) {
+  var pool = VOK.filter(function (x) { return x.k <= ctx.maxK; });
+  if (!v) { var p2 = ctx.kap ? pool.filter(function (x) { return x.k === ctx.kap; }) : pool; v = ziehe(ctx, "vok", p2); }
+  stufe = stufe || 1;
+  if (stufe >= 3 && /[ …]/.test(v.la)) stufe = 2;
+  var q = { thema: "Vokabeln", vok: v.id, k: v.k, loesung: "<b lang='la'>" + v.la + "</b> = " + v.de };
+  if (stufe >= 3) {
+    q.art = "text"; q.frage = "Wie heißt <b>„" + v.de + "“</b> auf Lateinisch?";
+    q.akzeptiert = [schluessel(v.la)]; q.hinweis = "Längenstriche brauchst du nicht zu tippen.";
+    return q;
+  }
+  var gleiche = pool.filter(function (x) { return x.id !== v.id && gruppe(x) === gruppe(v) && x.de !== v.de && schluessel(x.la) !== schluessel(v.la); });
+  if (gleiche.length < 3) gleiche = pool.filter(function (x) { return x.id !== v.id; });
+  var falsch = misch(gleiche).slice(0, 3), alle = misch([v].concat(falsch));
+  q.art = "wahl"; q.ok = alle.indexOf(v);
+  if (stufe === 1) { q.frage = "Was heißt <b lang='la'>" + v.la + "</b>?"; q.opts = alle.map(function (x) { return x.de; }); }
+  else { q.frage = "Wie heißt <b>„" + v.de + "“</b> auf Lateinisch?"; q.opts = alle.map(function (x) { return "<span lang='la'>" + x.la + "</span>"; }); }
+  return q;
+}
+
+function kasusBis(maxK) { return ["N", "G", "D", "A", "B"].filter(function (c) { return KASUS_AB[c] <= maxK; }); }
+
+function genDetektiv(ctx) {
+  var nomen = Object.keys(NOMEN).map(function (k) { return NOMEN[k]; }).filter(function (n) { return n.drill && n.k <= ctx.maxK; });
+  var n = ziehe(ctx, "nomen", nomen), kasus = kasusBis(ctx.maxK);
+  var c = ctx.kasus && kasus.indexOf(ctx.kasus) >= 0 && zufall(4) ? ctx.kasus : wahl(kasus);
+  var code = c + wahl(["1", "2"]), form = nomenForm(n.key, code), ok = [];
+  var zeilen = kasus.map(function (k) {
+    return { label: KASUS_NAME[k], zellen: ["1", "2"].map(function (z) {
+      if (nomenForm(n.key, k + z) === form) ok.push(k + z);
+      return { id: k + z, label: z === "1" ? "Singular" : "Plural" };
+    }) };
+  });
+  return { thema: "Kasus bestimmen", art: "gitter", zeilen: zeilen, ok: ok,
+    frage: "Welche Form ist <b lang='la'>" + form + "</b>?<br><small>" + n.la + " = " + n.de + ". Tippe alles an, was passt.</small>",
+    loesung: "<b lang='la'>" + form + "</b> ist " + ok.map(function (o) { return KASUS_NAME[o.charAt(0)] + " " + (o.charAt(1) === "1" ? "Singular" : "Plural"); }).join(" oder ") + "." };
+}
+
+function genEndung(ctx) {
+  var hat = function (s) { return s.tok.some(function (t) { return t.typ === "n" && !NOMEN[t.key].name && (!ctx.kasus || t.code.charAt(0) === ctx.kasus); }); };
+  var pool = saetzeBis(ctx, hat);
+  if (!pool.length) { pool = saetzeBis({ maxK: ctx.maxK }, function (s) { return s.tok.some(function (t) { return t.typ === "n" && !NOMEN[t.key].name; }); }); }
+  var s = ziehe(ctx, "satz", pool);
+  var kand = s.tok.map(function (t, i) { return i; }).filter(function (i) { var t = s.tok[i]; return t.typ === "n" && !NOMEN[t.key].name; });
+  var bevorzugt = kand.filter(function (i) { return ctx.kasus && s.tok[i].code.charAt(0) === ctx.kasus; });
+  var idx = wahl(bevorzugt.length ? bevorzugt : kand), t = s.tok[idx], n = NOMEN[t.key];
+  var codes = Object.keys(END[n.d]).filter(function (c) { return KASUS_AB[c.charAt(0)] <= ctx.maxK; });
+  var enden = einzig(codes.map(function (c) { return END[n.d][c]; })), richtig = END[n.d][t.code];
+  if (enden.indexOf(richtig) < 0) enden.push(richtig);
+  enden = misch(enden);
+  var stamm = plain(n.stamm), ersatz = {}; ersatz[idx] = stamm + "<u>___</u>";
+  return { thema: "Endungen", art: "wahl", ok: enden.indexOf(richtig),
+    opts: enden.map(function (e) { return "<span lang='la'>-" + e + "</span>"; }),
+    frage: "Welche Endung fehlt?<br><span class='de'>" + s.de + "</span><br><b lang='la' class='satz'>" + satzText(s, ersatz) + "</b>",
+    loesung: "<b lang='la'>" + satzText(s) + "</b>",
+    erkl: KASUS_NAME[t.code.charAt(0)] + " " + (t.code.charAt(1) === "1" ? "Singular" : "Plural") + " – " + KASUS_FRAGE[t.code.charAt(0)] };
+}
+
+function genSatzglied(ctx) {
+  var s = ziehe(ctx, "satz", saetzeBis(ctx, function (x) { return x.tok.length >= 2; }));
+  var rollen = einzig(s.tok.map(function (t) { return t.r; }).filter(function (r) { return ROLLE[r]; }));
+  var wunsch = { A: "O", D: "D", G: "G", B: "B" }[ctx.kasus];
+  var r = wunsch && rollen.indexOf(wunsch) >= 0 && zufall(3) ? wunsch : wahl(rollen);
+  var idx = s.tok.map(function (t) { return t.r; }).indexOf(r);
+  return { thema: "Satzglieder", art: "tipp", woerter: satzWoerter(s), zeichen: s.zeichen, ok: idx,
+    frage: "Tippe <b>" + ROLLE[r] + "</b> an.",
+    loesung: "<b lang='la'>" + satzWoerter(s)[idx] + "</b> ist " + ROLLE_KURZ[r] + ".<br><span class='de'>" + s.de + "</span>" };
+}
+
+function fehlerMoeglich(s) {
+  var m = [], hatS = s.tok.some(function (t) { return t.r === "S"; });
+  s.tok.forEach(function (t, i) {
+    if (t.typ === "v" && hatS && /^3[sp]$/.test(t.code)) m.push([i, andereZahl(t.code)]);
+    if (t.typ === "n" && t.r === "O") m.push([i, "N" + t.code.charAt(1)]);
+    if (t.typ === "n" && (t.r === "D" || t.r === "G" || t.r === "B")) m.push([i, "A" + t.code.charAt(1)]);
+  });
+  return m.filter(function (x) { return wortVon(s.tok[x[0]], x[1]) !== wortVon(s.tok[x[0]]); });
+}
+function genFehler(ctx) {
+  var s = ziehe(ctx, "satz", saetzeBis(ctx, function (x) { return fehlerMoeglich(x).length > 0; }));
+  var m = wahl(fehlerMoeglich(s)), ersatz = {}; ersatz[m[0]] = wortVon(s.tok[m[0]], m[1]);
+  return { thema: "Fehler finden", art: "tipp", woerter: satzWoerter(s, ersatz), zeichen: s.zeichen, ok: m[0],
+    frage: "In diesem Satz steckt ein Fehler. Er soll heißen:<br><span class='de'>" + s.de + "</span><br>Tippe das falsche Wort an.",
+    loesung: "Richtig heißt es: <b lang='la'>" + satzText(s) + "</b>" };
+}
+
+function genKarten(ctx) {
+  var s = ziehe(ctx, "satz", saetzeBis(ctx, function (x) { return x.tok.length >= 2; }));
+  var ziel = s.tok.map(function (t) { return wortVon(t); });
+  ziel = ziel.map(function (w, i) { return NOMEN[s.tok[i].key] && NOMEN[s.tok[i].key].name ? gross(w) : w; });
+  var falsch = [];
+  s.tok.forEach(function (t) {
+    if (t.typ === "x") return;
+    var alt = [andereZahl(t.code)];
+    if (t.typ === "n") {
+      var c = t.code.charAt(0), z = t.code.charAt(1);
+      var tausch = c === "N" ? "A" : "N";
+      if (KASUS_AB[tausch] <= ctx.maxK) alt.push(tausch + z);
+      if (c !== "A" && c !== "N" && ctx.maxK >= 3) alt.push("A" + z);
+    }
+    alt.forEach(function (a) { var w = wortVon(t, a); if (NOMEN[t.key] && NOMEN[t.key].name) w = gross(w); falsch.push(w); });
+  });
+  falsch = misch(einzig(falsch).filter(function (w) { return ziel.indexOf(w) < 0; })).slice(0, 3);
+  var pi = s.tok.map(function (t) { return t.r; }).indexOf("P");
+  return { thema: "Übersetzen", art: "karten", karten: misch(ziel.concat(falsch)), ziel: ziel, praed: ziel[pi],
+    praedVorn: /^I/.test(s.tok[pi].code),
+    frage: "Lege den Satz auf Lateinisch:<br><span class='de'>" + s.de + "</span><br><small>Es bleiben Karten übrig.</small>",
+    loesung: "<b lang='la'>" + satzText(s) + "</b>" };
+}
+
+function personenBis(maxK) {
+  var p = maxK < 4 ? ["3s", "3p"] : ["1s", "2s", "3s", "1p", "2p", "3p"];
+  return maxK >= 6 ? p.concat(["Is", "Ip"]) : p;
+}
+function genVerb(ctx) {
+  var verben = Object.keys(VERB).map(function (k) { return VERB[k]; }).filter(function (v) { return v.k <= ctx.maxK && (!ctx.konj || v.c === ctx.konj); });
+  var v = ziehe(ctx, "verb", verben), codes = personenBis(ctx.maxK), code = wahl(codes), form = verbForm(v.key || "esse", code);
+  var key = v.key || "esse";
+  if (zufall(2)) {
+    var formen = einzig(codes.concat(["inf"]).map(function (c) { return verbForm(key, c); })).filter(function (f) { return f !== form; });
+    var opts = misch([form].concat(misch(formen).slice(0, 3)));
+    return { thema: "Verbformen", art: "wahl", ok: opts.indexOf(form), opts: opts.map(function (f) { return "<span lang='la'>" + f + "</span>"; }),
+      frage: "<b lang='la'>" + v.la + "</b> (" + v.de + ")<br>Welche Form ist die <b>" + PERSON_NAME[code] + "</b>?",
+      loesung: "<b lang='la'>" + form + "</b> – " + PERSON_NAME[code] };
+  }
+  var andere = codes.filter(function (c) { return c !== code && verbForm(key, c) !== form; });
+  var o2 = misch([code].concat(misch(andere).slice(0, 3)));
+  return { thema: "Verbformen", art: "wahl", ok: o2.indexOf(code), opts: o2.map(function (c) { return PERSON_NAME[c]; }),
+    frage: "Welche Form ist <b lang='la'>" + form + "</b>?<br><small>" + v.la + " = " + v.de + "</small>",
+    loesung: "<b lang='la'>" + form + "</b> – " + PERSON_NAME[code] };
+}
+
+var BEFEHL_VERBEN = ["tacere", "ridere", "parere", "respondere", "sedere", "gaudere", "studere", "properare", "laborare", "intrare"];
+function genBefehl(ctx) {
+  var leute = Object.keys(NOMEN).map(function (k) { return NOMEN[k]; }).filter(function (n) { return n.person && n.k <= ctx.maxK; });
+  var verben = BEFEHL_VERBEN.filter(function (k) { return VERB[k].k <= ctx.maxK; });
+  var n = ziehe(ctx, "leute", leute), vk = ziehe(ctx, "bverb", verben), z = wahl(["1", "2"]), vz = z === "1" ? "s" : "p";
+  var p = function (f) { return plain(f); };
+  var imp = gross(p(verbForm(vk, "I" + vz))), impF = gross(p(verbForm(vk, "I" + (vz === "s" ? "p" : "s"))));
+  var vok = p(nomenForm(n.key, "V" + z));
+  var falschNomen = (n.d === "o" && z === "1") ? p(nomenForm(n.key, "N1")) : p(nomenForm(n.key, "A" + z));
+  var richtig = imp + ", " + vok + "!";
+  var opts = misch([richtig, impF + ", " + vok + "!", imp + ", " + falschNomen + "!", gross(p(verbForm(vk, "3" + vz))) + ", " + vok + "!"]);
+  return { thema: "Imperativ und Vokativ", art: "wahl", ok: opts.indexOf(richtig), opts: opts.map(function (o) { return "<span lang='la'>" + o + "</span>"; }),
+    frage: "Mach aus der Aussage einen Befehl:<br><b lang='la' class='satz'>" + gross(p(nomenForm(n.key, "N" + z))) + " " + p(verbForm(vk, "3" + vz)) + ".</b>",
+    loesung: "<b lang='la'>" + richtig + "</b>",
+    erkl: "Imperativ " + (z === "1" ? "Singular" : "Plural") + " und Anrede im Vokativ" + (n.d === "o" && z === "1" ? " (aus -us wird -e)" : " (wie Nominativ)") };
+}
+
+var VERWANDT = VERWANDT_ROH.map(function (z) {
+  var t = z.split("|"), v = VOK.filter(function (x) { return x.la === t[2]; })[0];
+  return { wort: t[0], sprache: t[1], vok: v };
+});
+function genVerwandt(ctx) {
+  var pool = VERWANDT.filter(function (x) { return x.vok.k <= ctx.maxK; }), w = ziehe(ctx, "verw", pool);
+  var andere = misch(VOK.filter(function (x) { return x.k <= ctx.maxK && x.id !== w.vok.id && x.art !== "x"; })).slice(0, 3);
+  var opts = misch([w.vok].concat(andere));
+  return { thema: "Wort-Verwandte", art: "wahl", ok: opts.indexOf(w.vok), opts: opts.map(function (x) { return "<span lang='la'>" + x.la + "</span>"; }),
+    frage: "Welches lateinische Wort steckt in <b>" + w.wort + "</b>?<br><small>" + (w.sprache === "Deutsch" ? "deutsches Wort" : w.sprache) + "</small>",
+    loesung: "<b lang='la'>" + w.vok.la + "</b> = " + w.vok.de };
+}
+
+var UEBUNGEN = {
+  detektiv: { titel: "Formen-Detektiv", text: "Welcher Fall, welche Zahl?", ab: 1, gen: genDetektiv },
+  endung: { titel: "Endungs-Schmiede", text: "Die richtige Endung einsetzen", ab: 2, gen: genEndung },
+  satzglied: { titel: "Satzglieder finden", text: "Subjekt, Prädikat, Objekt antippen", ab: 2, gen: genSatzglied },
+  verb: { titel: "Verb-Würfel", text: "Person und Zahl bei Verben", ab: 2, gen: genVerb },
+  befehl: { titel: "Befehlsgeber", text: "Aus Aussagen werden Befehle", ab: 6, gen: genBefehl },
+  karten: { titel: "Satzbau mit Wortkarten", text: "Deutsche Sätze lateinisch legen", ab: 2, gen: genKarten },
+  fehler: { titel: "Fehlerjagd", text: "Die falsche Form aufspüren", ab: 3, gen: genFehler },
+  verwandt: { titel: "Wort-Verwandte", text: "Latein in Wörtern von heute", ab: 1, gen: genVerwandt }
+};
+/* Was passt als Grammatik-Übung zu welchem Kapitel? */
+var KAPITEL_UEBUNG = [null, { u: "detektiv" }, { u: "verb" }, { u: "endung", kasus: "A" }, { u: "verb" }, { u: "endung", kasus: "D" },
+  { u: "befehl" }, { u: "endung", kasus: "G" }, { u: "verb", konj: "a" }, { u: "endung", kasus: "B" }];
+
+function rundeUebung(name, ctx, n) {
+  var a = []; for (var i = 0; i < (n || 8); i++) a.push(UEBUNGEN[name].gen(ctx)); return a;
+}
+function rundeProbe(maxK) {
+  var ctx = { maxK: maxK }, plan = ["vok", "vok", "vok", "vok", "detektiv", "detektiv", "endung", "endung", "verb", "verb", "satzglied", "karten", "karten", "fehler"];
+  if (maxK >= 6) plan.push("befehl");
+  return plan.map(function (p, i) {
+    if (p === "vok") return genVokabel(ctx, null, i % 2 ? 2 : 1);
+    return UEBUNGEN[p].ab <= maxK ? UEBUNGEN[p].gen(ctx) : genVokabel(ctx, null, 1);
+  });
+}
+
+/* Karteikasten: Fach 1–5, Abstände in Tagen */
+var ABSTAND = [0, 1, 2, 4, 7, 14];
+function tagesKarten(fach, maxK, heute, n) {
+  var pool = VOK.filter(function (v) { return v.k <= maxK; });
+  var faellig = pool.filter(function (v) { return fach[v.la] && fach[v.la].am <= heute; })
+    .sort(function (a, b) { return fach[a.la].f - fach[b.la].f || fach[a.la].am - fach[b.la].am; });
+  var neu = pool.filter(function (v) { return !fach[v.la]; });
+  var aus = faellig.slice(0, n);
+  aus = aus.concat(neu.slice(0, Math.max(0, n - aus.length)));
+  if (aus.length < n) {
+    var rest = pool.filter(function (v) { return aus.indexOf(v) < 0; }).sort(function (a, b) { return fach[a.la].f - fach[b.la].f; });
+    aus = aus.concat(rest.slice(0, n - aus.length));
+  }
+  return misch(aus);
+}
+
+
+/* üb mal · Latein – Oberfläche */
+"use strict";
+(function () {
+  var SCHULAUFGABE = new Date(2026, 10, 26);          /* 26.11.2026 */
+  var STOFF_SA = 8;                                    /* Schulaufgabe geht bis Kapitel 8 */
+  var KEY = "uebmal-latein-entwurf-1";
+  var app = document.getElementById("app");
+  var Z = { maxK: STOFF_SA, fach: {} };
+  function laden() { try { var g = JSON.parse(localStorage.getItem(KEY) || "null"); if (g && g.fach) Z = g; } catch (e) {} }
+  function sichern() { try { localStorage.setItem(KEY, JSON.stringify(Z)); } catch (e) {} }
+
+  function tagNr(d) { return Math.floor((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - new Date(2026, 0, 1).getTime()) / 864e5 + 0.5); }
+  var HEUTE = tagNr(new Date());
+  function tageBis() { return tagNr(SCHULAUFGABE) - HEUTE; }
+
+  function ohneTags(s) { return String(s).replace(/<br>/g, " ").replace(/<small>.*?<\/small>/g, "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim().slice(0, 200); }
+  function h(html) { app.innerHTML = html; window.scrollTo(0, 0); }
+  function klick(sel, fn) { Array.prototype.forEach.call(app.querySelectorAll(sel), function (e) { e.addEventListener("click", function (ev) { ev.preventDefault(); fn(e, ev); }); }); }
+
+  /* ---------- Startseite ---------- */
+  function planHeute() {
+    var d = tageBis();
+    if (d < 0) return null;
+    if (d === 0) return { text: "Heute ist Schulaufgabe. Viel Erfolg!" };
+    if (d === 1) return { text: "Morgen ist Schulaufgabe. Heute nur noch die Tagesrunde, nichts Neues mehr.", ziel: "tag", knopf: "Tagesrunde starten" };
+    if (d === 2) return { text: "Heute dran: die Probe-Schulaufgabe.", ziel: "probe", knopf: "Probe starten" };
+    if (d === 3) return { text: "Heute dran: Kapitel 1 und 2 wiederholen.", ziel: "kap2", knopf: "Zu Kapitel 2" };
+    if (d === 4) return { text: "Heute dran: Kapitel 3 und 4 wiederholen.", ziel: "kap4", knopf: "Zu Kapitel 4" };
+    var k = Math.min(8, d); if (d >= 8) k = 8;
+    return { text: "Heute dran: Kapitel " + k + " wiederholen.", ziel: "kap" + k, knopf: "Zu Kapitel " + k };
+  }
+  function fachZahlen() {
+    var pool = VOK.filter(function (v) { return v.k <= Z.maxK; }), z = [0, 0, 0, 0, 0, 0];
+    pool.forEach(function (v) { z[Z.fach[v.la] ? Z.fach[v.la].f : 0]++; });
+    return { z: z, n: pool.length };
+  }
+  function start() {
+    var p = planHeute(), d = tageBis(), f = fachZahlen();
+    var faellig = VOK.filter(function (v) { return v.k <= Z.maxK && (!Z.fach[v.la] || Z.fach[v.la].am <= HEUTE); }).length;
+    var s = "";
+    if (p) s += "<div class='hinweis'><b>Schulaufgabe am 26.11." + (d > 0 ? " – noch " + d + (d === 1 ? " Tag" : " Tage") : "") + "</b><br>" + p.text +
+      (p.ziel ? " <button class='knopf leise' data-plan='" + p.ziel + "'>" + p.knopf + "</button>" : "") + "</div>";
+    s += "<div class='raster'><a href='#' class='kachel breit' data-tag='1'><span class='f'>Jeden Tag · 5 Minuten</span><b>Tagesrunde Vokabeln</b>" +
+      "<small>" + (faellig ? faellig + " Wörter warten auf dich" : "Für heute ist alles wiederholt") + "</small></a></div>";
+    s += "<div class='faecher' title='Karteikasten'>" + f.z.map(function (n, i) {
+      return n ? "<i class='f" + i + "' style='flex:" + n + "'><span>" + (i ? "Fach " + i : "neu") + ": " + n + "</span></i>" : ""; }).join("") + "</div>";
+
+    s += "<h2>Kapitelweg</h2><div class='raster'>";
+    for (var k = 1; k <= 9; k++) {
+      var zu = k > Z.maxK;
+      s += "<a href='#' class='kachel" + (zu ? " zu" : "") + "' data-kap='" + k + "'><span class='f'>Kapitel " + k + (zu ? " · nach der Schulaufgabe" : "") + "</span><b>" +
+        KAPITEL[k].thema + "</b><small>" + VOK.filter(function (v) { return v.k === k; }).length + " Lernwörter</small></a>";
+    }
+    s += "</div><h2>Trainingsplatz <small class='klein'>gemischt aus Kapitel 1–" + Z.maxK + "</small></h2><div class='raster'>";
+    Object.keys(UEBUNGEN).forEach(function (u) {
+      if (UEBUNGEN[u].ab > Z.maxK) return;
+      s += "<a href='#' class='kachel' data-ueb='" + u + "'><span class='f'>Übung</span><b>" + UEBUNGEN[u].titel + "</b><small>" + UEBUNGEN[u].text + "</small></a>";
+    });
+    s += "<a href='#' class='kachel breit' data-probe='1'><span class='f'>Wie in der Schule</span><b>Probe-Schulaufgabe</b><small>Gemischte Aufgaben aus Kapitel 1–" + Z.maxK + " mit Auswertung nach Themen</small></a></div>";
+    s += "<div class='leiste'><label for='stoff'>Stoff bis</label><select id='stoff'>";
+    for (k = 1; k <= 9; k++) s += "<option value='" + k + "'" + (k === Z.maxK ? " selected" : "") + ">Kapitel " + k + (k === STOFF_SA ? " (Schulaufgabe)" : "") + "</option>";
+    s += "</select><span class='klein'>Wörter und Formen aus späteren Kapiteln kommen dann nicht vor.</span></div>";
+    h(s);
+    klick("[data-tag]", tagesrunde);
+    klick("[data-kap]", function (e) { kapitel(+e.dataset.kap); });
+    klick("[data-ueb]", function (e) { var u = e.dataset.ueb; runde({ titel: UEBUNGEN[u].titel, modul: u, neu: function () { return rundeUebung(u, { maxK: Z.maxK }, 8); } }); });
+    klick("[data-probe]", probe);
+    klick("[data-plan]", function (e) { var z = e.dataset.plan; z === "tag" ? tagesrunde() : z === "probe" ? probe() : kapitel(+z.slice(3)); });
+    app.querySelector("#stoff").addEventListener("change", function (e) { Z.maxK = +e.target.value; sichern(); start(); });
+  }
+  function probe() { runde({ titel: "Probe-Schulaufgabe", modul: "probe", neu: function () { return rundeProbe(Z.maxK); } }); }
+
+  /* ---------- Kapitelseite ---------- */
+  function nomenTabelle(k) {
+    var kas = ["N", "G", "D", "A", "B"].filter(function (c) { return KASUS_AB[c] <= k; });
+    var neu = { 1: "N", 3: "A", 5: "D", 7: "G", 9: "B" }[k];
+    var t = "<div class='rollen'><table><tr><th></th><th colspan='2'>a-Deklination</th><th colspan='2'>o-Deklination</th></tr><tr><th></th><th>Singular</th><th>Plural</th><th>Singular</th><th>Plural</th></tr>";
+    kas.forEach(function (c) {
+      t += "<tr" + (c === neu ? " class='neu'" : "") + "><th>" + KASUS_NAME[c] + "</th>" + ["serva", "servus"].map(function (w) {
+        return ["1", "2"].map(function (z) { var n = NOMEN[w]; return "<td lang='la'>" + plain(n.stamm) + "<b>-" + END[n.d][c + z] + "</b></td>"; }).join(""); }).join("") + "</tr>";
+    });
+    return t + "</table></div>";
+  }
+  function verbTabelle(k) {
+    var verben = k === 8 ? ["rogare"] : k === 2 ? ["ridere", "esse"] : ["ridere", "esse"];
+    var codes = k === 2 ? ["inf", "3s", "3p"] : k === 6 ? ["Is", "Ip"] : k === 8 ? ["inf", "1s", "2s", "3s", "1p", "2p", "3p", "Is", "Ip"] : ["1s", "2s", "3s", "1p", "2p", "3p"];
+    var t = "<div class='rollen'><table><tr><th></th>" + verben.map(function (v) { return "<th lang='la'>" + VERB[v].la + "</th>"; }).join("") + "</tr>";
+    codes.forEach(function (c) { t += "<tr><th>" + PERSON_NAME[c].replace(/ \(.*/, "") + "</th>" + verben.map(function (v) { return "<td lang='la'>" + verbForm(v, c) + "</td>"; }).join("") + "</tr>"; });
+    return t + "</table></div>";
+  }
+  function kapitel(k) {
+    var K = KAPITEL[k], woerter = VOK.filter(function (v) { return v.k === k; }), ku = KAPITEL_UEBUNG[k];
+    var s = "<p><button class='knopf leise' data-heim='1'>← Übersicht</button></p><h2 class='gross'>Kapitel " + k + ": " + K.thema + "</h2><p>" + K.text + "</p>";
+    s += K.art === "nomen" ? nomenTabelle(k) : verbTabelle(k);
+    if (k === 6) s += "<p class='klein'>Vokativ: Responde, puella! · Responde, serv<b>e</b>! · Respondete, puellae! · Respondete, servi!</p>";
+    s += "<div class='raster'><a href='#' class='kachel' data-kv='1'><span class='f'>Wortschatz</span><b>Vokabeln von Kapitel " + k + "</b><small>" + woerter.length + " Lernwörter</small></a>" +
+      "<a href='#' class='kachel' data-kg='1'><span class='f'>Grammatik</span><b>" + UEBUNGEN[ku.u].titel + "</b><small>" + K.thema + " · nur Stoff bis Kapitel " + k + "</small></a></div>";
+    s += "<details class='karte'><summary>Alle Lernwörter anzeigen</summary><table>" + woerter.map(function (v) { return "<tr><td lang='la'><b>" + v.la + "</b></td><td>" + v.de + "</td></tr>"; }).join("") + "</table></details>";
+    h(s);
+    klick("[data-heim]", start);
+    klick("[data-kv]", function () {
+      runde({ titel: "Vokabeln Kapitel " + k, modul: "vokabeln-k" + k, zurueck: function () { kapitel(k); }, neu: function () {
+        var ctx = { maxK: k, kap: k }, a = [];
+        for (var i = 0; i < Math.min(10, woerter.length); i++) a.push(mitFach(genVokabel(ctx, null, i % 2 ? 2 : 1)));
+        return a; } });
+    });
+    klick("[data-kg]", function () {
+      runde({ titel: UEBUNGEN[ku.u].titel + " · Kapitel " + k, modul: ku.u + "-k" + k, zurueck: function () { kapitel(k); },
+        neu: function () { return rundeUebung(ku.u, { maxK: k, kap: k, kasus: ku.kasus, konj: ku.konj }, 8); } });
+    });
+  }
+
+  /* ---------- Karteikasten ---------- */
+  function mitFach(q) {
+    q.danach = function (ok) {
+      var v = VOK[q.vok], alt = Z.fach[v.la] ? Z.fach[v.la].f : 0, f = ok ? Math.min(5, alt + 1) : 1;
+      Z.fach[v.la] = { f: f, am: HEUTE + (ok ? ABSTAND[f] : 0) }; sichern();
+    };
+    return q;
+  }
+  function tagesrunde() {
+    runde({ titel: "Tagesrunde Vokabeln", modul: "tagesrunde", neu: function () {
+      return tagesKarten(Z.fach, Z.maxK, HEUTE, 10).map(function (v) {
+        var f = Z.fach[v.la] ? Z.fach[v.la].f : 0;
+        return mitFach(genVokabel({ maxK: Z.maxK }, v, f >= 3 ? 3 : f >= 1 ? 2 : 1));
+      }); } });
+  }
+
+  /* ---------- Eine Runde ---------- */
+  function runde(def) {
+    var fragen = def.neu(), i = 0, erg = [], beginn = Date.now();
+    var heim = def.zurueck || start;
+    function zeig() {
+      var q = fragen[i];
+      h("<div class='rkopf'><button class='knopf leise' data-ende='1'>Beenden</button><b>" + def.titel + "</b><span class='klein'>" + (i + 1) + " von " + fragen.length + "</span></div>" +
+        "<div class='balken'><i style='width:" + (100 * i / fragen.length) + "%'></i></div>" +
+        "<div class='karte frage'><span class='pille grau'>" + q.thema + "</span><p class='ftext'>" + q.frage + "</p><div id='eingabe'></div><div id='rueck' aria-live='polite'></div></div>");
+      klick("[data-ende]", heim);
+      EINGABE[q.art](q, app.querySelector("#eingabe"), function (ok, gegeben, zusatz) {
+        erg.push({ q: q, ok: ok, gegeben: gegeben });
+        if (q.danach) q.danach(ok);
+        var r = app.querySelector("#rueck");
+        r.innerHTML = "<div class='" + (ok ? "gut" : "schlecht") + "'><b>" + (ok ? wahl(["Richtig!", "Genau!", "Stimmt!", "Optime!"]) : "Noch nicht.") + "</b> " +
+          (ok && q.art === "wahl" && !q.erkl ? "" : "<span>" + q.loesung + "</span>") + (q.erkl ? "<br><small>" + q.erkl + "</small>" : "") + (zusatz ? "<br><small>" + zusatz + "</small>" : "") +
+          "</div><button class='knopf' id='weiter'>" + (i + 1 < fragen.length ? "Weiter" : "Zur Auswertung") + "</button>";
+        var w = r.querySelector("#weiter"); w.focus();
+        w.addEventListener("click", function () { i++; i < fragen.length ? zeig() : ende(); });
+      });
+    }
+    function ende() {
+      var richtig = erg.filter(function (e) { return e.ok; }).length, themen = {};
+      erg.forEach(function (e) { var t = themen[e.q.thema] = themen[e.q.thema] || [0, 0]; t[1]++; if (e.ok) t[0]++; });
+      var falsch = erg.filter(function (e) { return !e.ok; });
+      try {
+        if (window.Uebmal && window.Uebmal.melde) window.Uebmal.melde({ modul: def.modul, titel: def.titel, richtig: richtig, gesamt: erg.length,
+          dauer_s: (Date.now() - beginn) / 1000, fehler: falsch.map(function (e) { return { f: e.q.thema + ": " + ohneTags(e.q.frage), a: String(e.gegeben || "").slice(0, 200), l: ohneTags(e.q.loesung) }; }) });
+      } catch (e) {}
+      var anteil = richtig / erg.length;
+      var s = "<h2 class='gross'>" + def.titel + "</h2><div class='zahlen'><div class='zahl'><b>" + richtig + " von " + erg.length + "</b><span>richtig</span></div>" +
+        "<div class='zahl'><b>" + Math.max(1, Math.round((Date.now() - beginn) / 60000)) + " min</b><span>Dauer</span></div></div>" +
+        "<p>" + (anteil === 1 ? "Alles richtig. Stark!" : anteil >= 0.75 ? "Das sitzt schon gut." : anteil >= 0.5 ? "Guter Anfang. Die Fehler unten zeigen dir, was du noch üben kannst." : "Das war schwer. Schau dir die Lösungen unten an und versuch es gleich noch einmal.") + "</p>";
+      if (Object.keys(themen).length > 1) {
+        s += "<div class='karte'><table><tr><th>Thema</th><th class='n'>richtig</th></tr>" + Object.keys(themen).map(function (t) {
+          var a = themen[t][0] / themen[t][1];
+          return "<tr><td>" + t + "</td><td class='n'><span class='pille " + (a >= 0.8 ? "gut" : a >= 0.5 ? "mittel" : "schwach") + "'>" + themen[t][0] + " von " + themen[t][1] + "</span></td></tr>"; }).join("") + "</table></div>";
+      }
+      if (falsch.length) s += "<h2>Das schauen wir uns noch einmal an</h2><div class='karte'>" + falsch.map(function (e) {
+        return "<div class='text-eintrag'><div class='frage'>" + e.q.thema + "</div><div>" + e.q.loesung + (e.q.erkl ? "<br><small class='klein'>" + e.q.erkl + "</small>" : "") + "</div></div>"; }).join("") + "</div>";
+      s += "<p class='leiste'><button class='knopf' data-nochmal='1'>Noch eine Runde</button><button class='knopf leise' data-heim='1'>Zur Übersicht</button></p>";
+      h(s);
+      klick("[data-nochmal]", function () { runde(def); });
+      klick("[data-heim]", heim);
+    }
+    zeig();
+  }
+
+  /* ---------- Eingabe-Arten ---------- */
+  var EINGABE = {
+    wahl: function (q, box, fertig) {
+      box.innerHTML = "<div class='opts" + (q.opts.length > 4 ? " viele" : "") + "'>" + q.opts.map(function (o, i) { return "<button class='opt' data-i='" + i + "'>" + o + "</button>"; }).join("") + "</div>";
+      var bs = box.querySelectorAll(".opt");
+      Array.prototype.forEach.call(bs, function (b) {
+        b.addEventListener("click", function () {
+          var i = +b.dataset.i;
+          Array.prototype.forEach.call(bs, function (x) { x.disabled = true; });
+          bs[q.ok].classList.add("ok"); if (i !== q.ok) b.classList.add("nein");
+          fertig(i === q.ok, b.textContent);
+        });
+      });
+    },
+    gitter: function (q, box, fertig) {
+      box.innerHTML = "<table class='gitter'>" + q.zeilen.map(function (z) {
+        return "<tr><th>" + z.label + "</th>" + z.zellen.map(function (c) { return "<td><button class='opt' aria-pressed='false' data-id='" + c.id + "'>" + c.label + "</button></td>"; }).join("") + "</tr>"; }).join("") +
+        "</table><button class='knopf' id='pruef'>Prüfen</button>";
+      var bs = box.querySelectorAll(".opt");
+      Array.prototype.forEach.call(bs, function (b) { b.addEventListener("click", function () { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true"); }); });
+      box.querySelector("#pruef").addEventListener("click", function (ev) {
+        var gew = Array.prototype.filter.call(bs, function (b) { return b.getAttribute("aria-pressed") === "true"; }).map(function (b) { return b.dataset.id; });
+        if (!gew.length) return;
+        ev.target.remove();
+        Array.prototype.forEach.call(bs, function (b) {
+          b.disabled = true; var soll = q.ok.indexOf(b.dataset.id) >= 0, ist = gew.indexOf(b.dataset.id) >= 0;
+          if (soll) b.classList.add("ok"); else if (ist) b.classList.add("nein");
+        });
+        var ok = gew.length === q.ok.length && gew.every(function (x) { return q.ok.indexOf(x) >= 0; });
+        var teil = !ok && gew.every(function (x) { return q.ok.indexOf(x) >= 0; });
+        fertig(ok, gew.join(" "), teil ? "Das stimmt, aber die Form kann noch mehr sein." : "");
+      });
+    },
+    tipp: function (q, box, fertig) {
+      box.innerHTML = "<p class='satz tippsatz' lang='la'>" + q.woerter.map(function (w, i) { return "<button class='wort' data-i='" + i + "'>" + w + "</button>"; }).join(" ") + "<span>" + q.zeichen + "</span></p>";
+      var bs = box.querySelectorAll(".wort");
+      Array.prototype.forEach.call(bs, function (b) {
+        b.addEventListener("click", function () {
+          var i = +b.dataset.i;
+          Array.prototype.forEach.call(bs, function (x) { x.disabled = true; });
+          bs[q.ok].classList.add("ok"); if (i !== q.ok) b.classList.add("nein");
+          fertig(i === q.ok, b.textContent);
+        });
+      });
+    },
+    karten: function (q, box, fertig) {
+      var gelegt = [], zu = false;
+      box.innerHTML = "<div class='ablage' id='abl' lang='la'></div><div class='vorrat' id='vor' lang='la'></div><button class='knopf' id='pruef'>Prüfen</button>";
+      function mal() {
+        box.querySelector("#abl").innerHTML = gelegt.length ? gelegt.map(function (k, n) { return "<button class='wort' data-n='" + n + "'>" + q.karten[k] + "</button>"; }).join(" ") : "<span class='klein'>Tippe unten die Karten in der richtigen Reihenfolge an.</span>";
+        box.querySelector("#vor").innerHTML = q.karten.map(function (w, k) { return "<button class='wort' data-k='" + k + "'" + (gelegt.indexOf(k) >= 0 ? " disabled" : "") + ">" + w + "</button>"; }).join(" ");
+        Array.prototype.forEach.call(box.querySelectorAll("#vor .wort"), function (b) { b.addEventListener("click", function () { if (!zu) { gelegt.push(+b.dataset.k); mal(); } }); });
+        Array.prototype.forEach.call(box.querySelectorAll("#abl .wort"), function (b) { b.addEventListener("click", function () { if (!zu) { gelegt.splice(+b.dataset.n, 1); mal(); } }); });
+      }
+      mal();
+      box.querySelector("#pruef").addEventListener("click", function (ev) {
+        if (!gelegt.length) return;
+        zu = true; ev.target.remove();
+        var w = gelegt.map(function (k) { return q.karten[k]; });
+        var ok = w.slice().sort().join("|") === q.ziel.slice().sort().join("|");
+        Array.prototype.forEach.call(box.querySelectorAll(".wort"), function (b) { b.disabled = true; });
+        box.querySelector("#abl").classList.add(ok ? "ok" : "nein");
+        var tipp = ok && !q.praedVorn && w[w.length - 1] !== q.praed ? "Tipp: Im Lateinischen steht das Prädikat meist am Satzende." : "";
+        fertig(ok, w.join(" "), tipp);
+      });
+    },
+    text: function (q, box, fertig) {
+      box.innerHTML = "<form class='tform'><input type='text' id='ein' lang='la' autocomplete='off' autocapitalize='none' autocorrect='off' spellcheck='false' aria-label='Deine Antwort'>" +
+        "<button class='knopf'>Prüfen</button></form><p class='klein'>" + (q.hinweis || "") + "</p>";
+      var ein = box.querySelector("#ein"); ein.focus();
+      box.querySelector("form").addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var wert = ein.value.trim(); if (!wert) return;
+        var ok = q.akzeptiert.indexOf(schluessel(wert)) >= 0;
+        ein.disabled = true; ein.classList.add(ok ? "ok" : "nein"); box.querySelector("form .knopf").remove();
+        fertig(ok, wert);
+      });
+    }
+  };
+
+  /* Auf uebmal.de erst starten, wenn die Anmeldung geprüft ist; der Karteikasten gehört dann zum Konto. */
+  (window.UEBMAL_SCHUTZ || Promise.resolve(null)).then(function () {
+    if (window.Uebmal && window.Uebmal.user) KEY += "-" + window.Uebmal.user.id;
+    laden(); start();
+  });
+})();
+
+</script>
+</body>
+</html>
