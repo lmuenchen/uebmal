@@ -4,37 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#0a1220">
-<title>üb mal – Dein Wissen ist Dein stärkster Zauber</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a1220'/%3E%3Cpath d='M16 3l8 7.5v11L16 29l-8-7.5v-11z' fill='%23f3c55e'/%3E%3Cpath d='M16 3l8 7.5-8 5.5-8-5.5z' fill='%23ffe9a8'/%3E%3C/svg%3E">
-<link rel="preload" href="schrift/cinzel-900.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="start.css">
+<title>uebmal.de</title>
+<link rel="stylesheet" href="stil.css">
 <script src="lib/supabase.js"></script>
 <script src="config.js"></script>
 <script src="konto.js"></script>
-<script>try{if(localStorage.getItem("uebmal-aussehen")==="klassisch")location.replace("klassisch.html"+location.search);}catch(e){}</script>
 </head>
 <body>
-<div class="buehne">
-  <div class="tafel">
-    <header class="kopf">
-      <h1 class="logo"><span>üb</span> mal</h1>
-      <button class="knopf leise" id="abmelden" type="button" hidden>Abmelden</button>
-    </header>
-    <div class="mitte">
-      <p class="slogan">Dein Wissen ist <span>Dein stärkster Zauber.</span></p>
-      <p class="gruss" id="gruss">Kurze Übungsrunden für die Schule.</p>
-      <main id="inhalt"><p class="lade">Lädt …</p></main>
+<div class="wrap">
+  <header class="kopf">
+    <div>
+      <h1><span>üb</span> mal</h1>
+      <p class="sub" id="gruss">Kurze Übungsrunden für die Schule.</p>
     </div>
-  </div>
-  <figure class="bild">
-    <img src="bilder/luna-eisluchs-1254.webp"
-         srcset="bilder/luna-eisluchs-800.webp 800w, bilder/luna-eisluchs-1254.webp 1254w"
-         sizes="(min-width: 900px) 58vw, 100vw" width="1254" height="1254" fetchpriority="high" decoding="async"
-         alt="Luna, die Hamster-Abenteurerin, hält einen leuchtenden Kristall. Neben ihr schleicht ein Eisluchs durch den nächtlichen Wald.">
-    <span class="funke f1"></span><span class="funke f2"></span><span class="funke f3"></span>
-    <span class="funke f4"></span><span class="funke f5"></span><span class="funke f6"></span>
-  </figure>
+    <button class="knopf leise" id="abmelden" type="button" hidden>Abmelden</button>
+  </header>
+
+  <main id="inhalt"><p class="sub">Lädt …</p></main>
 </div>
 
 <script>
@@ -42,30 +28,18 @@
   "use strict";
   var U = window.Uebmal, inhalt = document.getElementById("inhalt");
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-  function deko(cls) { var e = el("span", cls); e.setAttribute("aria-hidden", "true"); return e; }
-  function fachKlasse(f) {
-    return "fach-" + String(f || "").toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "-");
-  }
   function kachel(s) {
-    var a = el("a", "kachel " + fachKlasse(s.fach)); a.href = s.pfad;
-    a.appendChild(deko("stein"));
-    var t = el("span", "text");
-    t.appendChild(el("span", "f", s.stufe)); t.appendChild(el("b", null, s.titel)); t.appendChild(el("small", null, s.text));
-    a.appendChild(t);
-    a.appendChild(deko("pfeil"));
+    var a = el("a", "kachel"); a.href = s.pfad;
+    a.appendChild(el("span", "f", s.stufe)); a.appendChild(el("b", null, s.titel)); a.appendChild(el("small", null, s.text));
     return a;
   }
   function zeigeKacheln(seiten, eltern) {
-    document.body.classList.add("drin");
     inhalt.textContent = "";
     if (eltern) {
       var g0 = el("div", "raster");
       var a = el("a", "kachel breit"); a.href = "eltern/";
-      var t0 = el("span", "text");
-      t0.appendChild(el("span", "f", "Nur für Eltern")); t0.appendChild(el("b", null, "Eltern-Ansicht"));
-      t0.appendChild(el("small", null, "Was wurde geübt, wie gut lief es, was ist freigegeben"));
-      a.appendChild(t0);
-      a.appendChild(deko("pfeil"));
+      a.appendChild(el("span", "f", "Nur für Eltern")); a.appendChild(el("b", null, "Eltern-Ansicht"));
+      a.appendChild(el("small", null, "Was wurde geübt, wie gut lief es, was ist freigegeben"));
       g0.appendChild(a); inhalt.appendChild(g0);
     }
     if (!seiten.length) {
@@ -75,14 +49,13 @@
     var faecher = [];
     seiten.forEach(function (s) { if (faecher.indexOf(s.fach) < 0) faecher.push(s.fach); });
     faecher.forEach(function (f) {
-      inhalt.appendChild(el("h2", "fach", f));
+      inhalt.appendChild(el("h2", null, f));
       var g = el("div", "raster");
       seiten.filter(function (s) { return s.fach === f; }).forEach(function (s) { g.appendChild(kachel(s)); });
       inhalt.appendChild(g);
     });
   }
   function zeigeAnmeldung(meldung) {
-    document.body.classList.remove("drin");
     inhalt.textContent = "";
     var f = el("form", "anmeldung"); f.setAttribute("autocomplete", "on");
     f.appendChild(el("h2", null, "Anmelden"));
@@ -124,10 +97,6 @@
       var p = await U.ladeProfil(sitz.user.id);
       if (!p) { inhalt.textContent = ""; inhalt.appendChild(el("p", "hinweis", "Zu diesem Konto fehlt das Profil. Sag Papa Bescheid.")); return; }
       U.profil = p;
-      if (U.klassisch && U.klassisch(p)) {   /* dieses Konto bekommt die bisherige Oberfläche */
-        try { localStorage.setItem("uebmal-aussehen", "klassisch"); } catch (e) {}
-        location.replace("klassisch.html" + location.search); return;
-      }
       document.getElementById("gruss").textContent = "Hallo " + p.anzeigename + "!";
       var eltern = p.rolle === "eltern";
       var frei = eltern ? U.SEITEN.map(function (s) { return s.id; }) : await U.ladeFreigaben(sitz.user.id);
