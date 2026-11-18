@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mathe · Delta 5 · Kapitel 1 und 2</title>
+<meta name="robots" content="noindex,nofollow">
+<script src="../lib/supabase.js"></script>
+<script src="../config.js"></script>
+<script src="../konto.js"></script>
+<script>if(window.Uebmal)window.UEBMAL_SCHUTZ=Uebmal.schuetze("mathe-delta5-sa1");</script>
+<style>
+/* Aussehen wie die bisherige Oberfläche von uebmal.de (stil.css) */
+:root{
+  --paper:#f4f7f3; --card:#ffffff; --ink:#16302b; --muted:#5b6f6a; --line:#d5e0db;
+  --green:#1f8a5b; --green-ink:#ffffff; --marker:#ffe36e; --marker-ink:#3a3200;
+  --ok:#17794b; --ok-bg:#dff3e7; --mid:#8a6100; --mid-bg:#fff1c9; --bad:#b3372e; --bad-bg:#fbe4e1; --soft:#e8f0ec;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#0f1b18; --card:#182823; --ink:#e8f1ed; --muted:#9db3ac; --line:#2c423b;
+    --green:#3fbf86; --green-ink:#062216; --marker:#e9c93d; --marker-ink:#1f1a00;
+    --ok:#6fdca6; --ok-bg:#173b2b; --mid:#f0c75a; --mid-bg:#3d3212; --bad:#ff9a8f; --bad-bg:#472320; --soft:#20342e;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:18px;line-height:1.45}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 56px}
+.kopf{border-top:8px solid var(--green);padding:22px 0 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+h1{font-size:2rem;line-height:1.1;margin:0}
+h1 span{background:var(--marker);color:var(--marker-ink);padding:0 8px;border-radius:6px}
+h2{font-size:1.15rem;margin:28px 0 10px}
+h2.gross{font-size:1.5rem;margin-top:12px;line-height:1.2}
+.sub{color:var(--muted);margin:6px 0 0}
+.hinweis{background:var(--soft);border-left:5px solid var(--green);border-radius:8px;padding:12px 14px;margin:18px 0}
+.hinweis .knopf{margin-left:6px}
+.raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
+a.kachel{display:flex;flex-direction:column;gap:4px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;color:inherit;text-decoration:none;min-height:96px}
+a.kachel:hover,a.kachel:focus-visible{border-color:var(--green);outline:none}
+a.kachel b{font-size:1.1rem}
+a.kachel small{color:var(--muted)}
+a.kachel .f{color:var(--green);font-weight:700;font-size:.85rem}
+a.kachel.breit{grid-column:1/-1;background:var(--green);color:var(--green-ink);border-color:var(--green);min-height:0}
+a.kachel.breit .f,a.kachel.breit small{color:var(--green-ink)}
+a.kachel.zu{border-style:dashed;opacity:.7}
+.knopf{font:inherit;font-weight:700;background:var(--green);color:var(--green-ink);border:0;border-radius:12px;padding:12px 20px;cursor:pointer}
+.knopf.leise{background:none;color:var(--ink);border:1.5px solid var(--line);font-weight:400;padding:8px 14px}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.leiste{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 4px}
+.leiste select{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.zahlen{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.zahl{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+.zahl b{display:block;font-size:1.6rem;line-height:1.15;font-variant-numeric:tabular-nums}
+.zahl span{color:var(--muted);font-size:.85rem}
+.karte{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px}
+.rollen{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.8rem;color:var(--muted);font-weight:700;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.neu td,tr.neu th{background:var(--mid-bg)}
+.pille{display:inline-block;border-radius:999px;padding:1px 9px;font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums}
+.pille.gut{background:var(--ok-bg);color:var(--ok)}
+.pille.mittel{background:var(--mid-bg);color:var(--mid)}
+.pille.schwach{background:var(--bad-bg);color:var(--bad)}
+.pille.grau{background:var(--soft);color:var(--muted)}
+.text-eintrag{border-top:1px solid var(--line);padding:10px 0}
+.text-eintrag:first-child{border-top:0}
+.text-eintrag .frage{color:var(--muted);font-size:.9rem}
+.klein{font-size:.85rem;color:var(--muted);font-weight:400}
+summary{cursor:pointer;font-weight:700}
+
+/* Trainer */
+.faecher{display:flex;gap:3px;height:26px;margin-top:10px;border-radius:8px;overflow:hidden}
+.faecher i{display:flex;align-items:center;justify-content:center;min-width:0;font-style:normal;font-size:.72rem;white-space:nowrap;overflow:hidden;color:var(--ink);background:var(--line)}
+.faecher i span{padding:0 4px}
+.faecher .f1{background:var(--bad-bg)} .faecher .f2{background:var(--mid-bg)} .faecher .f3{background:var(--soft)}
+.faecher .f4{background:var(--ok-bg)} .faecher .f5{background:var(--green);color:var(--green-ink)}
+.rkopf{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:8px;flex-wrap:wrap}
+.balken{height:8px;background:var(--line);border-radius:99px;margin:10px 0 14px;overflow:hidden}
+.balken i{display:block;height:100%;background:var(--green);border-radius:99px}
+.frage{padding:18px}
+.ftext{font-size:1.2rem;margin:10px 0 16px}
+.ftext small{font-size:.85rem;color:var(--muted)}
+.de{color:var(--muted);font-style:italic}
+.satz{font-size:1.35rem;font-family:Georgia,"Times New Roman",serif}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts.viele{grid-template-columns:repeat(4,1fr)}
+@media (max-width:520px){.opts{grid-template-columns:1fr}.opts.viele{grid-template-columns:1fr 1fr}}
+.opt,.wort{font:inherit;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;min-height:48px}
+.opt:hover:not(:disabled),.wort:hover:not(:disabled){border-color:var(--green)}
+.opt[aria-pressed=true]{border-color:var(--green);background:var(--soft);font-weight:700}
+.opt.ok,.wort.ok,input.ok,.ablage.ok{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);font-weight:700}
+.opt.nein,.wort.nein,input.nein,.ablage.nein{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.opt:disabled,.wort:disabled{cursor:default}
+.gitter{margin-bottom:14px}
+.gitter th{font-size:.95rem;color:var(--ink);vertical-align:middle}
+.gitter td{padding:5px}
+.gitter .opt{width:100%;text-align:center;padding:9px 6px;min-height:44px}
+.wort{font-size:1.25rem;padding:8px 14px;margin:4px 2px}
+.tippsatz{line-height:2.4}
+.ablage{min-height:70px;border:2px dashed var(--line);border-radius:12px;padding:8px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center}
+.vorrat{margin-bottom:14px}
+.vorrat .wort:disabled{opacity:.25}
+.tform{display:flex;gap:10px;flex-wrap:wrap}
+.tform input{flex:1;min-width:180px;font:inherit;font-size:1.25rem;font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:11px 13px}
+#rueck{margin-top:16px}
+#rueck .gut,#rueck .schlecht{border-radius:10px;padding:10px 12px;margin-bottom:12px}
+#rueck .gut{background:var(--ok-bg);color:var(--ok)}
+#rueck .schlecht{background:var(--bad-bg);color:var(--bad)}
+#rueck span,#rueck small{color:var(--ink)}
+
+/* Mathe */
+.gross{font-size:1.5rem;display:inline-block;margin-top:6px}
+.wort{font-family:inherit}
+b.wort{font-size:1.15rem;border:0;background:none;padding:0;margin:0;cursor:auto;display:inline}
+.ftext{font-size:1.15rem;margin:10px 0 16px}
+.ftext.klein2{font-size:1rem;margin:4px 0 8px}
+.opts.lang{grid-template-columns:1fr}
+.tform .vor{align-self:center;font-size:1.3rem;font-weight:700}
+.tform input{font-family:inherit;font-variant-numeric:tabular-nums}
+.merk{margin:0;padding-left:20px}.merk li{margin:6px 0}
+.falle{background:var(--mid-bg);color:var(--ink);border-radius:8px;padding:8px 12px;margin:12px 0 0}
+.strahl{width:100%;height:auto;margin:10px 0;display:block}
+.strahl .achse,.strahl .strich{stroke:var(--ink);stroke-width:2}
+.strahl .spitze{fill:var(--ink)}
+.strahl .zahl{fill:var(--ink);font-size:17px;text-anchor:middle;font-family:inherit}
+.strahl .buchstabe{fill:var(--bad);font-size:18px;font-weight:700;text-anchor:middle}
+.strahl .pfeil{fill:var(--bad)}
+.strahl .feld{fill:transparent;cursor:pointer}
+.strahl:not(.fertig) .feld:hover{fill:var(--green);opacity:.18}
+.strahl .feld.ok{fill:var(--ok);opacity:.35}.strahl .feld.nein{fill:var(--bad);opacity:.35}
+.mauer{margin:14px 0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mauer div{display:flex;gap:4px}
+.mauer span{min-width:78px;text-align:center;padding:8px 6px;border:2px solid var(--line);border-radius:6px;background:var(--soft);font-weight:700;font-variant-numeric:tabular-nums}
+.mauer span.leer{background:var(--marker);color:var(--marker-ink);border-color:var(--marker)}
+.spalten{display:table;margin:12px 0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.5rem;line-height:1.35}
+.spalten div{display:flex;justify-content:flex-end}
+.spalten span{width:.95em;text-align:center}.spalten i{font-style:normal;margin-right:auto;padding-right:.6em}
+.spalten hr{border:0;border-top:3px solid var(--ink);margin:2px 0}
+.pkarten{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
+.pkarten span{width:64px;height:88px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;border-radius:10px;border:2px solid var(--line);background:var(--card)}
+.pkarten .plus{color:var(--ok);border-color:var(--ok)}.pkarten .minus{color:var(--bad);border-color:var(--bad)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="kopf">
+    <div>
+      <h1><span>üb</span> mal · Mathe</h1>
+      <p class="sub"><a href="../" style="color:inherit">← uebmal.de</a> · Klasse 5 · Delta 5 · Kapitel 1 und 2</p>
+    </div>
+  </header>
+  <main id="app"></main>
+</div>
+<script>
+
+/* üb mal · Mathe Delta 5 – Aufgaben zu Kapitel 1 und 2 (ohne Oberfläche) */
+"use strict";
+
+function zufall(n) { return Math.floor(Math.random() * n); }
+function zw(a, b) { return a + zufall(b - a + 1); }
+function wahl(a) { return a[zufall(a.length)]; }
+function misch(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = zufall(i + 1); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function einzig(a) { return a.filter(function (x, i) { return a.indexOf(x) === i; }); }
+
+/* Zahl schön schreiben: Dreierblöcke, echtes Minuszeichen */
+function z(n) {
+  var s = String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return (n < 0 ? "−" : "") + s;
+}
+function vz(n) { return (n > 0 ? "+" : n < 0 ? "−" : "") + z(Math.abs(n)); }   /* mit Vorzeichen */
+function kl(n) { return "(" + (n === 0 ? "0" : vz(n)) + ")"; }                  /* (+5), (−3) */
+/* Eingabe lesen: Leerzeichen, Punkte, Pluszeichen weg; alle Minus-Arten erlaubt */
+function lies(s) {
+  s = String(s).replace(/[\s  .']/g, "").replace(/[−–—]/g, "-").replace(/^\+/, "");
+  return /^-?\d+$/.test(s) ? parseInt(s, 10) : NaN;
+}
+
+/* ---------- Zahlwörter ---------- */
+var EINER = ["", "ein", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", "zwölf", "dreizehn", "vierzehn", "fünfzehn", "sechzehn", "siebzehn", "achtzehn", "neunzehn"];
+var ZEHNER = ["", "", "zwanzig", "dreißig", "vierzig", "fünfzig", "sechzig", "siebzig", "achtzig", "neunzig"];
+function unter1000(n) {
+  var s = "", h = Math.floor(n / 100), r = n % 100;
+  if (h) s += EINER[h] + "hundert";
+  if (r < 20) s += EINER[r];
+  else s += (r % 10 ? EINER[r % 10] + "und" : "") + ZEHNER[Math.floor(r / 10)];
+  return s;
+}
+function zahlwort(n) {
+  if (n === 0) return "null";
+  var teile = [], bio = Math.floor(n / 1e12), mrd = Math.floor(n / 1e9) % 1000, mio = Math.floor(n / 1e6) % 1000, tsd = Math.floor(n / 1000) % 1000, rest = n % 1000;
+  function gross(k, ein, mehr) { if (k) teile.push(k === 1 ? "eine " + ein : unter1000(k) + " " + mehr); }
+  gross(bio, "Billion", "Billionen"); gross(mrd, "Milliarde", "Milliarden"); gross(mio, "Million", "Millionen");
+  var klein = (tsd ? unter1000(tsd) + "tausend" : "") + unter1000(rest);
+  if (rest % 100 === 1) klein += "s";            /* …eins am Ende */
+  if (klein) teile.push(klein);
+  return teile.join(" ");
+}
+
+/* ---------- Themen ---------- */
+var THEMEN = [
+  { id: "zm", kap: "1.1", titel: "Zahlen und Mengen",
+    merk: ["ℕ = {1; 2; 3; …} sind die natürlichen Zahlen. Die 0 gehört nicht dazu: 0 ∉ ℕ, aber 0 ∈ ℕ₀.",
+      "ℤ = {…; −2; −1; 0; 1; 2; …} sind die ganzen Zahlen. Jede natürliche Zahl ist auch eine ganze Zahl.",
+      "Jede natürliche Zahl hat einen Nachfolger. Einen Vorgänger in ℕ hat jede außer der 1.",
+      "Quadratzahlen entstehen, wenn man eine Zahl mit sich selbst malnimmt: 1, 4, 9, 16, 25, …"],
+    falle: "Bei Nachfolger und Vorgänger auf die Neunen und Nullen achten: Nachfolger von 199 999 ist 200 000." },
+  { id: "zs", kap: "1.2", titel: "Zahlenstrahl und Zahlengerade",
+    merk: ["Erst herausfinden, wie groß ein Schritt ist: Abstand zweier beschrifteter Zahlen durch die Anzahl der Schritte dazwischen teilen.",
+      "Je weiter rechts eine Zahl liegt, desto größer ist sie. Das gilt auch für negative Zahlen."],
+    falle: "Nicht einfach in Einerschritten zählen. Ein Strich kann 2, 5, 10 oder 100 bedeuten." },
+  { id: "gz", kap: "1.3", titel: "Große Zahlen und Stellenwerte",
+    merk: ["Stufenzahlen: Tausend (3 Nullen), Million (6 Nullen), Milliarde (9 Nullen), Billion (12 Nullen).",
+      "Der Wert einer Ziffer hängt von ihrer Stelle ab. Die Stellenwerttafel hilft: … HT ZT T | H Z E.",
+      "Große Zahlen in Dreierblöcken von rechts schreiben und fehlende Stellen mit Nullen füllen."],
+    falle: "Nullen nicht vergessen: vier Millionen siebzig ist 4 000 070 und nicht 4 070." },
+  { id: "ru", kap: "1.4", titel: "Runden und Überschlagen",
+    merk: ["Nur die Ziffer rechts von der Rundungsstelle entscheidet.", "Bei 0, 1, 2, 3, 4 wird abgerundet, bei 5, 6, 7, 8, 9 aufgerundet.",
+      "Alle Stellen rechts von der Rundungsstelle werden zu Nullen.", "Beim Überschlag rundet man zuerst und rechnet dann im Kopf."],
+    falle: "Nie schrittweise runden. 749 auf Hunderter ist 700, auch wenn 749 auf Zehner 750 wäre." },
+  { id: "go", kap: "1.5/1.6", titel: "Ganze Zahlen ordnen",
+    merk: ["Negative Zahlen liegen links von der Null. Von zwei Zahlen ist die größer, die weiter rechts liegt.",
+      "Bei negativen Zahlen gilt: Je größer der Betrag, desto kleiner die Zahl. −12 < −9.",
+      "Der Betrag ist der Abstand zur Null und nie negativ: |−5| = 5.", "Zahl und Gegenzahl haben denselben Betrag: Gegenzahl von −5 ist 5."],
+    falle: "−12 °C ist kälter als −9 °C, also ist −12 die kleinere Zahl." },
+  { id: "fk", kap: "2.1/2.2", titel: "Fachbegriffe und geschicktes Rechnen",
+    merk: ["Addition: Summand + Summand = Summe. Subtraktion: Minuend − Subtrahend = Differenz.",
+      "Beim Addieren darf man vertauschen und beliebig Klammern setzen (Kommutativ- und Assoziativgesetz).",
+      "Rechenvorteil: zuerst Zahlen zusammenfassen, die glatte Hunderter oder Tausender ergeben."],
+    falle: "„Subtrahiere 20 von 50“ heißt 50 − 20. Beim Subtrahieren darf man nicht vertauschen." },
+  { id: "sr", kap: "2.1/2.2", titel: "Schriftlich rechnen",
+    merk: ["Stellengerecht untereinanderschreiben: Einer unter Einer, Zehner unter Zehner.", "Von rechts nach links rechnen und Überträge notieren.",
+      "Vorher überschlagen, danach mit der Umkehraufgabe die Probe machen."],
+    falle: "Bei Nullen im Minuenden genau auf die Überträge achten, zum Beispiel bei 80 073 − 6 027." },
+  { id: "kt", kap: "2.3/2.4", titel: "Klammern und Terme",
+    merk: ["Was in Klammern steht, wird zuerst gerechnet. Bei mehreren Klammern die innere zuerst.", "Ohne Klammern rechnet man von links nach rechts.",
+      "Die letzte Rechnung bestimmt die Art des Terms: (537 − 171) + 93 ist eine Summe."],
+    falle: "Ein Minus vor der Klammer ändert alles: 36 − (18 − 6) = 24, aber 36 − 18 − 6 = 12." },
+  { id: "gl", kap: "2.5", titel: "Gleichungen",
+    merk: ["Die Lösung ist die Zahl, die die Gleichung wahr macht.", "Lösen mit der Umkehraufgabe: x + 23 = 56, also x = 56 − 23.",
+      "Immer die Probe machen: Lösung einsetzen und nachrechnen."],
+    falle: "Bei 25 − x = 13 steht x hinten. Dann ist x = 25 − 13 und nicht 25 + 13." },
+  { id: "ga", kap: "2.6–2.8", titel: "Ganze Zahlen addieren und subtrahieren",
+    merk: ["Addieren an der Zahlengeraden: Plus eine positive Zahl heißt nach rechts gehen, plus eine negative Zahl nach links.",
+      "Gleiche Vorzeichen: Beträge addieren, Vorzeichen behalten. (−3) + (−5) = −8.",
+      "Verschiedene Vorzeichen: Beträge subtrahieren, das Vorzeichen der Zahl mit dem größeren Betrag gewinnt. (−3) + (+5) = +2.",
+      "Subtrahieren heißt die Gegenzahl addieren: (−3) − (−5) = (−3) + (+5) = +2."],
+    falle: "Minus minus wird zu plus: 4 − (−6) = 4 + 6 = 10." }
+];
+function thema(id) { return THEMEN.filter(function (t) { return t.id === id; })[0]; }
+
+/* ---------- Bausteine für die Anzeige ---------- */
+function frageWahl(t, frage, richtig, falsche, extra) {
+  var opts = extra && extra.fest ? extra.fest : misch(einzig([richtig].concat(falsche)).slice(0, 4));
+  var q = { t: t, art: "wahl", frage: frage, opts: opts, ok: opts.indexOf(richtig), loesung: richtig };
+  for (var k in extra || {}) q[k] = extra[k];
+  return q;
+}
+function frageZahl(t, frage, n, extra) {
+  var q = { t: t, art: "text", frage: frage, zahl: n, loesung: "<b>" + z(n) + "</b>" };
+  for (var k in extra || {}) q[k] = extra[k];
+  return q;
+}
+function wahrFalsch(t, aussage, wahr, erkl) {
+  return { t: t, art: "wahl", frage: "Wahr oder falsch?<br><b class='gross'>" + aussage + "</b>", opts: ["wahr", "falsch"], ok: wahr ? 0 : 1, loesung: wahr ? "Das ist wahr." : "Das ist falsch.", erkl: erkl };
+}
+
+/* Zahlenstrahl als Grafik. o = {min, schritt, n, beschriftet:[Index…], marke: Index, tippbar: bool} */
+function strahlSvg(o) {
+  var B = 700, x0 = 30, x1 = 670, dx = (x1 - x0) / (o.n - 1), s = "<svg class='strahl' viewBox='0 0 " + B + " 110' role='img' aria-label='Zahlengerade'>";
+  s += "<line x1='10' y1='60' x2='690' y2='60' class='achse'/><path d='M690 60 l-9 -5 v10 z' class='spitze'/>";
+  for (var i = 0; i < o.n; i++) {
+    var x = x0 + i * dx, lang = o.beschriftet.indexOf(i) >= 0;
+    s += "<line x1='" + x + "' y1='" + (lang ? 46 : 52) + "' x2='" + x + "' y2='" + (lang ? 74 : 68) + "' class='strich'/>";
+    if (lang) s += "<text x='" + x + "' y='96' class='zahl'>" + z(o.min + i * o.schritt) + "</text>";
+    if (o.tippbar) s += "<rect x='" + (x - dx / 2) + "' y='22' width='" + dx + "' height='66' class='feld' data-i='" + i + "'/>";
+  }
+  if (o.marke != null) { var mx = x0 + o.marke * dx; s += "<path d='M" + mx + " 44 l-7 -14 h14 z' class='pfeil'/><text x='" + mx + "' y='22' class='buchstabe'>A</text>"; }
+  return s + "</svg>";
+}
+function mauerHtml(reihen) {   /* reihen von oben nach unten; null = gesucht */
+  return "<div class='mauer'>" + reihen.map(function (r) {
+    return "<div>" + r.map(function (v) { return "<span" + (v == null ? " class='leer'>?" : ">" + z(v)) + "</span>"; }).join("") + "</div>"; }).join("") + "</div>";
+}
+function spaltenHtml(zeilen, zeichen, ergebnis) {
+  var breite = Math.max.apply(null, zeilen.concat([ergebnis]).map(function (x) { return String(x).length; }));
+  function reihe(v, op) { var s = String(v); while (s.length < breite) s = " " + s; return "<div><i>" + (op || "") + "</i>" + s.split("").map(function (c) { return "<span>" + c + "</span>"; }).join("") + "</div>"; }
+  return "<div class='spalten'>" + zeilen.map(function (v, i) { return reihe(v, i ? zeichen : ""); }).join("") + "<hr>" + reihe(ergebnis) + "</div>";
+}
+
+/* ---------- 1.1 Zahlen und Mengen ---------- */
+var AUSSAGEN_ZM = [
+  ["0 ∈ ℕ", false, "Die natürlichen Zahlen beginnen bei 1. Die 0 gehört erst zu ℕ₀."], ["0 ∈ ℕ₀", true, "ℕ₀ sind die natürlichen Zahlen zusammen mit der 0."],
+  ["−3 ∈ ℤ", true, "ℤ enthält auch die negativen ganzen Zahlen."], ["−3 ∈ ℕ", false, "Negative Zahlen sind keine natürlichen Zahlen."],
+  ["17 ∈ ℤ", true, "Jede natürliche Zahl ist auch eine ganze Zahl."], ["Jede natürliche Zahl hat einen Nachfolger.", true, "Man kann immer 1 dazuzählen."],
+  ["Es gibt eine größte natürliche Zahl.", false, "Jede Zahl hat einen Nachfolger, also gibt es keine größte."],
+  ["Die 1 hat in ℕ einen Vorgänger.", false, "Der Vorgänger wäre 0, und 0 gehört nicht zu ℕ."],
+  ["Jede ganze Zahl ist eine natürliche Zahl.", false, "Zum Beispiel ist −5 eine ganze, aber keine natürliche Zahl."],
+  ["Es gibt eine kleinste ganze Zahl.", false, "Die ganzen Zahlen gehen nach links unendlich weiter."],
+  ["Die kleinste natürliche Zahl ist 1.", true, "ℕ = {1; 2; 3; …}"], ["144 ist eine Quadratzahl.", true, "12 · 12 = 144"],
+  ["200 ist eine Quadratzahl.", false, "14 · 14 = 196 und 15 · 15 = 225. Dazwischen liegt keine Quadratzahl."], ["0 ist eine ganze Zahl.", true, "Die 0 gehört zu ℤ."]
+];
+function genZM(o) {
+  var art = o && o.falle ? wahl([0, 1]) : zufall(5);
+  if (art === 0) { var a = wahl(AUSSAGEN_ZM); return wahrFalsch("zm", a[0], a[1], a[2]); }
+  if (art === 1) {
+    var stellen = zw(3, 6), basis = zw(1, 9) * Math.pow(10, stellen), nach = zufall(2) === 0;
+    var n = nach ? basis - 1 : basis;   /* …999 → Nachfolger, …000 → Vorgänger */
+    if (zufall(4) === 0) { n = -zw(1, 30) * 10; nach = zufall(2) === 0; }
+    return frageZahl("zm", "Wie heißt der <b>" + (nach ? "Nachfolger" : "Vorgänger") + "</b> von <b>" + z(n) + "</b>?", nach ? n + 1 : n - 1,
+      { erkl: nach ? "Nachfolger heißt: 1 dazu." : "Vorgänger heißt: 1 weniger." });
+  }
+  if (art === 2) { var b = zw(11, 25); return frageZahl("zm", "Berechne die Quadratzahl: <b>" + b + " · " + b + "</b>", b * b); }
+  if (art === 3) {
+    var q = zw(4, 15), richtig = q * q, falsche = misch([richtig + 2, richtig + 3, richtig - 2, richtig + 5, q * (q + 1)]).slice(0, 3);
+    return frageWahl("zm", "Welche Zahl ist eine <b>Quadratzahl</b>?", z(richtig), falsche.map(z), { erkl: q + " · " + q + " = " + richtig });
+  }
+  var m = zw(1000, 999999), qs = String(m).split("").reduce(function (s, c) { return s + +c; }, 0);
+  return frageZahl("zm", "Berechne die <b>Quersumme</b> von <b>" + z(m) + "</b>.", qs, { erkl: String(m).split("").join(" + ") + " = " + qs });
+}
+
+/* ---------- 1.2 Zahlenstrahl ---------- */
+function genZS(o) {
+  var negativ = !o || !o.nurPositiv ? zufall(2) === 0 : false;
+  var schritt = wahl([1, 2, 5, 10, 20, 25, 50, 100, 500, 1000]), n = 21;
+  var start = negativ ? -schritt * wahl([10, 15, 5]) : schritt * wahl([0, 0, 10, 40]);
+  var besch = wahl([[0, 10, 20], [0, 5, 10, 15, 20], [5, 15], [0, 10, 20]]);
+  var art = zufall(3);
+  if (art === 0) {
+    var idx; do { idx = zw(1, 19); } while (besch.indexOf(idx) >= 0);
+    return frageZahl("zs", "Welche Zahl ist bei <b>A</b> markiert?" + strahlSvg({ min: start, schritt: schritt, n: n, beschriftet: besch, marke: idx }), start + idx * schritt,
+      { erkl: "Ein Schritt ist hier " + z(schritt) + " groß." });
+  }
+  if (art === 1) {
+    var ziel; do { ziel = zw(1, 19); } while (besch.indexOf(ziel) >= 0);
+    return { t: "zs", art: "strahl", frage: "Tippe auf der Zahlengeraden die Zahl <b>" + z(start + ziel * schritt) + "</b> an.",
+      strahl: { min: start, schritt: schritt, n: n, beschriftet: besch, tippbar: true }, ok: ziel, loesung: "Ein Schritt ist hier " + z(schritt) + " groß." };
+  }
+  var halb = zw(2, 30) * wahl([1, 5, 10]), mitte = negativ ? zw(-40, 10) : zw(halb, 500), a = mitte - halb, b = mitte + halb;
+  return frageZahl("zs", "Welche Zahl liegt genau in der <b>Mitte</b> zwischen <b>" + z(a) + "</b> und <b>" + z(b) + "</b>?", mitte,
+    { erkl: "Der Abstand ist " + z(b - a) + ", die Hälfte davon " + z(halb) + ". " + z(a) + " + " + z(halb) + " = " + z(mitte) });
+}
+
+/* ---------- 1.3 Große Zahlen ---------- */
+var STELLEN = ["Einer", "Zehner", "Hunderter", "Tausender", "Zehntausender", "Hunderttausender", "Millionen", "Zehnmillionen", "Hundertmillionen", "Milliarden"];
+function grosseZahl() {
+  var bloecke = zw(2, 4), n = 0;
+  for (var i = 0; i < bloecke; i++) { var b = wahl([0, zw(1, 9), zw(10, 99), zw(100, 999), zw(1, 9) * 10, zw(1, 9) * 100, zw(100, 999)]); if (i === 0 && b === 0) b = zw(1, 99); n = n * 1000 + b; }
+  return n;
+}
+function genGZ(o) {
+  var art = o && o.falle ? wahl([0, 4]) : zufall(6);
+  if (art === 0) { var n = grosseZahl(); return frageZahl("gz", "Schreibe als Zahl in Ziffern:<br><b class='wort'>" + zahlwort(n) + "</b>", n, { erkl: "Jeder Dreierblock braucht drei Stellen. Fehlende Stellen mit Nullen füllen." }); }
+  if (art === 1) {
+    var m; do { m = grosseZahl(); } while (m < 1e6);
+    var top = Math.floor(m / 1e6), f1 = Math.floor(m / 1000), f2 = top * 1e9 + m % 1e6, f3 = top * 1e6 + (m % 1000) * 1000 + Math.floor((m % 1e6) / 1000);
+    return frageWahl("gz", "Wie schreibt man <b>" + z(m) + "</b> in Worten?", zahlwort(m), einzig([zahlwort(f1), zahlwort(f2), zahlwort(f3)]).filter(function (w) { return w !== zahlwort(m); }), { lang: true });
+  }
+  if (art === 2) {
+    var k = zw(100000, 99999999), s = String(k), pos = zw(0, s.length - 1), ziffer = s.charAt(s.length - 1 - pos);
+    if (s.split(ziffer).length > 2 || ziffer === "0") return genGZ({});
+    return frageWahl("gz", "Welchen Stellenwert hat die Ziffer <b>" + ziffer + "</b> in <b>" + z(k) + "</b>?", STELLEN[pos],
+      misch(STELLEN.slice(0, s.length).filter(function (x, i) { return i !== pos; })).slice(0, 3));
+  }
+  if (art === 3) {
+    var stufe = wahl([["eine Million", 6], ["eine Milliarde", 9], ["eine Billion", 12], ["zehn Millionen", 7], ["hundert Milliarden", 11]]);
+    return frageZahl("gz", "Wie viele <b>Nullen</b> hat " + stufe[0] + ", wenn man sie in Ziffern schreibt?", stufe[1], { erkl: "Tausend 3, Million 6, Milliarde 9, Billion 12 Nullen." });
+  }
+  if (art === 4) {
+    var zi = misch([0, zw(1, 9), zw(1, 9), zw(1, 9), zw(1, 9)]).slice(0, 4); if (zi.indexOf(0) < 0) zi[zufall(4)] = 0;
+    var klein = zufall(2) === 0, sort = zi.slice().sort(function (a, b) { return a - b; }), erg;
+    if (klein) { var i0 = sort.findIndex(function (d) { return d > 0; }); erg = [sort[i0]].concat(sort.filter(function (d, i) { return i !== i0; })); }
+    else erg = sort.slice().reverse();
+    return frageZahl("gz", "Du hast die Ziffernkarten <b>" + zi.join(" · ") + "</b>. Bilde daraus die <b>" + (klein ? "kleinste" : "größte") + "</b> vierstellige Zahl. Jede Karte wird genau einmal benutzt.",
+      parseInt(erg.join(""), 10), { erkl: klein ? "Eine Zahl darf nicht mit 0 beginnen. Vorne steht die kleinste Ziffer, die nicht 0 ist." : "Die größten Ziffern kommen nach vorne." });
+  }
+  var e = zw(2, 8), f = wahl([10, 100, 1000]), basis = zw(12, 999) * wahl([1, 1000]);
+  return frageZahl("gz", "Welche Zahl ist <b>" + z(f) + "-mal so groß</b> wie <b>" + z(basis) + "</b>?", basis * f, { erkl: "Jede Ziffer rückt um " + (String(f).length - 1) +  " Stellen nach links." });
+}
+
+/* ---------- 1.4 Runden ---------- */
+var RUND = [[10, "Zehner"], [100, "Hunderter"], [1000, "Tausender"], [10000, "Zehntausender"], [100000, "Hunderttausender"], [1000000, "Millionen"]];
+function runde(n, s) { return Math.floor(n / s + 0.5) * s; }
+function genRU(o) {
+  var art = o && o.falle ? wahl([1, 3]) : zufall(5), r = wahl(RUND.slice(0, 5)), n;
+  if (art === 0) { n = zw(r[0] * 2, r[0] * 900); if (n % r[0] === 0) n += zw(1, r[0] - 1);
+    return frageZahl("ru", "Runde <b>" + z(n) + "</b> auf <b>" + r[1] + "</b>.", runde(n, r[0]), { erkl: "Entscheidend ist die Ziffer rechts von der Rundungsstelle: " + String(n).charAt(String(n).length - String(r[0]).length + 1) + "." }); }
+  if (art === 1) {   /* Fallen: Übertrag über mehrere Stellen oder verlockendes Doppelrunden */
+    r = wahl(RUND.slice(zufall(2) ? 0 : 1, 3));
+    if (zufall(2)) n = zw(2, 9) * r[0] * 100 - zw(1, r[0] / 2);                                   /* 4 996 auf Zehner → 5 000 */
+    else { r = wahl(RUND.slice(1, 4)); n = zw(2, 90) * r[0] + 45 * (r[0] / 100) + zw(0, 5 * (r[0] / 100) - 1); }   /* 749 auf Hunderter → 700 */
+    return frageZahl("ru", "Runde <b>" + z(n) + "</b> auf <b>" + r[1] + "</b>.", runde(n, r[0]), { erkl: "Nur die eine Ziffer rechts von der Rundungsstelle entscheidet. Nicht schrittweise runden." });
+  }
+  if (art === 2) {
+    var zeilen = [], falschIdx = zufall(4);
+    for (var i = 0; i < 4; i++) { var rr = wahl(RUND.slice(0, 4)), m = zw(rr[0] * 2, rr[0] * 90) + zw(1, rr[0] - 1), g = runde(m, rr[0]);
+      if (i === falschIdx) g = g > m ? g - rr[0] : g + rr[0];
+      zeilen.push(z(m) + " ≈ " + z(g) + " (auf " + rr[1] + ")"); }
+    return frageWahl("ru", "Rundungs-Detektiv: <b>Eine</b> dieser Rundungen ist falsch. Welche?", zeilen[falschIdx], zeilen.filter(function (x, i) { return i !== falschIdx; }), { lang: true, erkl: "Bei 0 bis 4 abrunden, bei 5 bis 9 aufrunden." });
+  }
+  if (art === 3) {
+    r = wahl(RUND.slice(0, 3)); var ziel = zw(2, 60) * r[0], klein = zufall(2) === 0;
+    return frageZahl("ru", "Welches ist die <b>" + (klein ? "kleinste" : "größte") + "</b> natürliche Zahl, die auf " + r[1] + " gerundet <b>" + z(ziel) + "</b> ergibt?",
+      klein ? ziel - r[0] / 2 : ziel + r[0] / 2 - 1, { erkl: klein ? "Ab der Hälfte wird aufgerundet." : "Kurz vor der nächsten Hälfte wird noch abgerundet." });
+  }
+  var a = zw(1200, 8900), b = zw(1100, 4900), c = zw(2100, 6900), ue = runde(a, 1000) + runde(b, 1000) + runde(c, 1000);
+  return frageWahl("ru", "Überschlage: <b>" + z(a) + " + " + z(b) + " + " + z(c) + "</b> ist ungefähr …", z(ue), [z(ue + 3000), z(ue - 2000 > 0 ? ue - 2000 : ue + 5000), z(ue * 10)],
+    { erkl: "Auf Tausender runden: " + z(runde(a, 1000)) + " + " + z(runde(b, 1000)) + " + " + z(runde(c, 1000)) });
+}
+
+/* ---------- 1.5/1.6 Ganze Zahlen ordnen ---------- */
+var LAGEN = [["412 m unter dem Meeresspiegel", -412], ["7 °C unter dem Gefrierpunkt", -7], ["im 2. Untergeschoss der Tiefgarage", -2], ["31 € Schulden auf dem Konto", -31],
+  ["609 m über dem Meeresspiegel", 609], ["ein Guthaben von 67 €", 67], ["5. Stock über dem Erdgeschoss", 5], ["das Jahr 753 v. Chr.", -753], ["11 034 m unter dem Meeresspiegel", -11034]];
+function genGO(o) {
+  var art = o && o.falle ? wahl([0, 0, 2]) : zufall(7), a, b;
+  if (art === 0) {
+    a = -zw(1, 60); b = zufall(3) ? -zw(1, 60) : wahl([0, zw(1, 20), -a]); if (a === b) b = a - 3;
+    if (zufall(2)) { var t = a; a = b; b = t; }
+    return frageWahl("go", "Welches Zeichen passt?<br><b class='gross'>" + z(a) + " ▢ " + z(b) + "</b>", a < b ? "<" : ">", [a < b ? ">" : "<", "="],
+      { fest: ["<", ">", "="], erkl: z(Math.min(a, b)) + " liegt auf der Zahlengeraden weiter links, ist also kleiner." });
+  }
+  if (art === 1) {
+    var zahlen = []; while (zahlen.length < 5) { var v = zw(-40, 25); if (zahlen.indexOf(v) < 0) zahlen.push(v); }
+    var auf = zufall(2) === 0, ziel = zahlen.slice().sort(function (x, y) { return auf ? x - y : y - x; });
+    return { t: "go", art: "ordnen", karten: zahlen.map(z), ziel: ziel.map(z), frage: "Ordne die Zahlen. Beginne mit der <b>" + (auf ? "kleinsten" : "größten") + "</b>.",
+      loesung: "<b>" + ziel.map(z).join(auf ? " &lt; " : " &gt; ") + "</b>" };
+  }
+  if (art === 2) {
+    a = zufall(4) ? -zw(2, 99) : zw(2, 99);
+    if (zufall(2)) return frageZahl("go", "Wie groß ist der <b>Betrag</b> von <b>" + z(a) + "</b>?", Math.abs(a), { erkl: "Der Betrag ist der Abstand zur Null und nie negativ." });
+    return frageZahl("go", "Wie heißt die <b>Gegenzahl</b> von <b>" + z(a) + "</b>?", -a, { erkl: "Die Gegenzahl liegt gleich weit von der Null entfernt, aber auf der anderen Seite." });
+  }
+  if (art === 3) { var l = wahl(LAGEN); return frageWahl("go", "Welche ganze Zahl passt zu:<br><b>" + l[0] + "</b>?", z(l[1]), [z(-l[1]), z(l[1] < 0 ? l[1] - 1 : l[1] + 1), "0"]); }
+  if (art === 4) {
+    a = -zw(2, 20); b = zw(-1, 25); if (b === 0) b = 3;
+    return frageZahl("go", "Am Morgen sind es <b>" + z(a) + " °C</b>, am Mittag <b>" + z(b) + " °C</b>. Wie viel Grad liegen dazwischen?", b - a,
+      { erkl: b > 0 ? "Von " + z(a) + " bis 0 sind es " + z(-a) + ", von 0 bis " + z(b) + " noch einmal " + z(b) + "." : "Beide Zahlen sind negativ: Abstand = " + z(-a) + " − " + z(-b) + "." });
+  }
+  if (art === 5) {
+    a = -zw(3, 12); b = a + zw(3, 5); var innen = zw(a + 1, b - 1);
+    return frageWahl("go", "Welche Zahl macht die Aussage wahr?<br><b class='gross'>" + z(a) + " &lt; ▢ &lt; " + z(b) + "</b>", z(innen), [z(a - 1), z(b + 1), z(a - zw(2, 5))]);
+  }
+  a = -zw(2, 30); b = a - zw(1, 12);
+  return frageWahl("go", "Wo ist es <b>kälter</b>?", z(b) + " °C", [z(a) + " °C"], { erkl: z(b) + " liegt weiter links auf der Zahlengeraden." });
+}
+
+/* ---------- 2.1/2.2 Fachbegriffe, geschickt rechnen ---------- */
+function genFK(o) {
+  var art = o && o.falle ? 1 : zufall(5), a, b, c;
+  if (art === 0) {
+    a = zw(120, 900); b = zw(20, 110); var plus = zufall(2) === 0, rollen = plus ? [["1. Summand", a], ["2. Summand", b], ["Summe", a + b]] : [["Minuend", a], ["Subtrahend", b], ["Differenz", a - b]], r = wahl(rollen);
+    return frageWahl("fk", "<b class='gross'>" + z(a) + (plus ? " + " : " − ") + z(b) + " = " + z(plus ? a + b : a - b) + "</b><br>Wie heißt die Zahl <b>" + z(r[1]) + "</b> in dieser Rechnung?",
+      r[0].replace(/^\d\. /, ""), ["Summand", "Summe", "Minuend", "Subtrahend", "Differenz"].filter(function (x) { return x !== r[0].replace(/^\d\. /, ""); }).slice(plus ? 1 : 0, plus ? 4 : 3));
+  }
+  if (art === 1) { a = zw(15, 480); b = a + zw(30, 900);
+    return frageZahl("fk", "<b>Subtrahiere " + z(a) + " von " + z(b) + ".</b> Welche Zahl kommt heraus?", b - a, { erkl: "Gerechnet wird " + z(b) + " − " + z(a) + ". Die Zahl nach „von“ ist der Minuend." }); }
+  if (art === 2) {
+    var rund = wahl([100, 200, 1000, 500]); a = zw(11, rund - 11); if (a % 10 === 0) a += 3; b = rund - a; c = zw(12, 480);
+    var reihen = [a, c, b];
+    return frageZahl("fk", "Rechne geschickt im Kopf:<br><b class='gross'>" + reihen.map(z).join(" + ") + "</b>", a + b + c, { erkl: "Zuerst " + z(a) + " + " + z(b) + " = " + z(rund) + ", dann + " + z(c) + "." });
+  }
+  if (art === 3) {
+    var u = [zw(12, 95), zw(12, 95), zw(12, 95)], m1 = u[0] + u[1], m2 = u[1] + u[2], oben = m1 + m2;
+    if (zufall(2)) return frageZahl("fk", "Zahlenmauer: Auf jedem Stein steht die <b>Summe</b> der beiden Steine darunter. Welche Zahl fehlt?" + mauerHtml([[null], [m1, m2], u]), oben);
+    return frageZahl("fk", "Zahlenmauer: Auf jedem Stein steht die <b>Summe</b> der beiden Steine darunter. Welche Zahl fehlt?" + mauerHtml([[oben], [m1, m2], [u[0], null, u[2]]]), u[1],
+      { erkl: z(m1) + " − " + z(u[0]) + " = " + z(u[1]) });
+  }
+  a = zw(20, 90); b = zw(100, 700); c = zw(100, 900);
+  var txt = wahl([["Bilde die <b>Summe</b> aus " + z(a) + " und " + z(b) + ".", a + b], ["Berechne die <b>Differenz</b> der Zahlen " + z(b + c) + " und " + z(a) + ".", b + c - a],
+    ["Addiere zur Zahl " + z(b) + " die Zahl " + z(c) + ".", b + c], ["Vermindere " + z(b + c) + " um " + z(a) + ".", b + c - a]]);
+  return frageZahl("fk", txt[0], txt[1]);
+}
+
+/* ---------- 2.1/2.2 Schriftlich rechnen ---------- */
+function genSR(o) {
+  var art = o && o.falle ? 1 : zufall(5), a, b, c;
+  if (art === 0) { a = zw(1200, 98000); b = zw(300, 9900); c = zw(15, 990);
+    return frageZahl("sr", "Rechne schriftlich auf Papier und tippe das Ergebnis ein:" + spaltenHtml([a, b, c], "+", "?"), a + b + c, { erkl: "Überschlag: etwa " + z(runde(a, 1000) + runde(b, 1000) + runde(c, 1000)) }); }
+  if (art === 1) {   /* Subtraktion mit Nullen im Minuenden */
+    a = wahl([zw(1, 9) * 10000 + zw(1, 9) * 10 + zw(0, 9), zw(1, 9) * 1000, zw(2, 9) * 100000, zw(1, 9) * 10000 + zw(1, 9) * 100, zw(10, 99) * 1000 + zw(1, 9)]);
+    b = zw(Math.floor(a / 20), Math.floor(a * 0.8)); if (b % 10 === 0) b += 7;
+    return frageZahl("sr", "Rechne schriftlich auf Papier und tippe das Ergebnis ein:" + spaltenHtml([a, b], "−", "?"), a - b, { erkl: "Probe: " + z(a - b) + " + " + z(b) + " = " + z(a) });
+  }
+  if (art === 2) {   /* Fehlerstelle */
+    a = zw(3000, 9800); b = zw(400, 2900); var minus = zufall(2) === 0, erg = minus ? a - b : a + b, pos = zw(0, 3), s = String(erg).split(""), i = s.length - 1 - pos;
+    if (i < 0) { pos = 0; i = s.length - 1; }
+    s[i] = i === 0 ? String(+s[i] < 9 ? +s[i] + 1 : 8) : String((+s[i] + wahl([1, 9])) % 10);
+    return frageWahl("sr", "Hier hat sich jemand verrechnet. An welcher <b>Stelle</b> steht eine falsche Ziffer?" + spaltenHtml([a, b], minus ? "−" : "+", s.join("")), STELLEN[pos],
+      STELLEN.slice(0, 4).filter(function (x, k) { return k !== pos; }), { fest: ["Tausender", "Hunderter", "Zehner", "Einer"], erkl: "Richtig ist " + z(erg) + "." });
+  }
+  if (art === 3) {
+    a = zw(21000, 89000); b = zw(3100, 9800); var richtig = zufall(2) === 0, gezeigt = richtig ? a + b : a + b + wahl([90000, -18000, 100000]);
+    return frageWahl("sr", "Prüfe mit einem <b>Überschlag</b>, ohne genau zu rechnen. Kann das stimmen?<br><b class='gross'>" + z(a) + " + " + z(b) + " = " + z(gezeigt) + "</b>", richtig ? "Ja, das passt" : "Nein, das kann nicht sein",
+      [richtig ? "Nein, das kann nicht sein" : "Ja, das passt"], { fest: ["Ja, das passt", "Nein, das kann nicht sein"], erkl: "Überschlag: " + z(runde(a, 1000)) + " + " + z(runde(b, 1000)) + " = " + z(runde(a, 1000) + runde(b, 1000)) });
+  }
+  var h1 = zw(2, 6), m1 = zw(2, 28), h2 = zw(0, h1 - 1), m2 = zw(m1 + 5, 58), d = h1 * 60 + m1 - h2 * 60 - m2;
+  function zeit(min) { return Math.floor(min / 60) + " h " + (min % 60) + " min"; }
+  return frageWahl("sr", "Rechne mit Zeiten:<br><b class='gross'>" + h1 + " h " + m1 + " min − " + (h2 ? h2 + " h " : "") + m2 + " min</b>", zeit(d), [zeit(d + 40), zeit(d + 60), zeit(Math.abs(h1 - h2) * 60 + m2 - m1)],
+    { erkl: "Eine Stunde hat 60 Minuten, nicht 100. In Minuten: " + (h1 * 60 + m1) + " − " + (h2 * 60 + m2) + " = " + d + " min." });
+}
+
+/* ---------- 2.3/2.4 Klammern und Terme ---------- */
+function genKT(o) {
+  var art = o && o.falle ? 1 : zufall(5), a, b, c, d;
+  if (art === 0) {
+    c = zw(2, 15); d = zw(1, 9); b = c + d + zw(3, 30); a = b + c + zw(5, 60);
+    var muster = wahl([[z(a) + " − (" + z(b) + " − " + z(c) + ") − " + z(d), a - (b - c) - d], [z(a) + " − (" + z(b) + " + " + z(c) + ") + " + z(d), a - (b + c) + d],
+      ["(" + z(a) + " + " + z(b) + ") − (" + z(c) + " + " + z(d) + ")", a + b - (c + d)], [z(a) + " − [" + z(b) + " − (" + z(c) + " + " + z(d) + ")]", a - (b - (c + d))]]);
+    return frageZahl("kt", "Berechne den Wert des Terms:<br><b class='gross'>" + muster[0] + "</b>", muster[1], { erkl: "Klammern zuerst, innere Klammer vor der äußeren. Sonst von links nach rechts." });
+  }
+  if (art === 1) {
+    a = zw(30, 90); b = zw(10, 25); c = zw(2, b - 3); var v = wahl([[" + (", " + ", " + ", true], [" + (", " − ", " − ", true], [" − (", " − ", " − ", false], [" − (", " + ", " + ", false]]);
+    return frageWahl("kt", "Haben beide Terme <b>denselben Wert</b>?<br><b class='gross'>" + z(a) + v[0] + z(b) + v[1] + z(c) + ")</b><br><b class='gross'>" + z(a) + v[0].replace("(", "") + z(b) + v[2] + z(c) + "</b>",
+      v[3] ? "gleich" : "verschieden", [v[3] ? "verschieden" : "gleich"], { fest: ["gleich", "verschieden"], erkl: v[3] ? "Nach einem Plus darf man die Klammer weglassen." : "Ein Minus vor der Klammer ändert den Wert, wenn man die Klammer einfach weglässt." });
+  }
+  if (art === 2) {
+    a = zw(200, 900); b = zw(20, 150); c = zw(20, 150); var f = wahl([["(" + z(a) + " − " + z(b) + ") + " + z(c), "Summe"], [z(a) + " − (" + z(b) + " + " + z(c) + ")", "Differenz"], ["(" + z(a) + " + " + z(b) + ") − " + z(c), "Differenz"], [z(a) + " + (" + z(b + c) + " − " + z(c) + ")", "Summe"]]);
+    return frageWahl("kt", "Welche Art von Term ist das?<br><b class='gross'>" + f[0] + "</b>", f[1], [f[1] === "Summe" ? "Differenz" : "Summe"], { fest: ["Summe", "Differenz"], erkl: "Entscheidend ist die Rechnung, die man zuletzt ausführt." });
+  }
+  if (art === 3) {
+    a = zw(60, 99); b = zw(12, 30); c = zw(2, 9);
+    var f2 = wahl([["Subtrahiere von " + a + " die Summe aus " + b + " und " + c + ".", a + " − (" + b + " + " + c + ")", [a + " − " + b + " + " + c, "(" + b + " + " + c + ") − " + a, "(" + a + " − " + b + ") + " + c]],
+      ["Addiere zur Differenz von " + a + " und " + b + " die Zahl " + c + ".", "(" + a + " − " + b + ") + " + c, [a + " − (" + b + " + " + c + ")", "(" + b + " − " + a + ") + " + c, a + " + (" + b + " − " + c + ")"]],
+      ["Subtrahiere die Differenz von " + b + " und " + c + " von " + a + ".", a + " − (" + b + " − " + c + ")", ["(" + b + " − " + c + ") − " + a, a + " − " + b + " − " + c, "(" + a + " − " + b + ") − " + c]]]);
+    return frageWahl("kt", "Welcher Term passt zum Text?<br><b>" + f2[0] + "</b>", f2[1], f2[2], { lang: true });
+  }
+  a = zw(40, 90); b = zw(12, 30); c = zw(2, 9);
+  return frageZahl("kt", "Rechne von links nach rechts:<br><b class='gross'>" + z(a) + " − " + z(b) + " + " + z(c) + " − " + z(c + 3) + "</b>", a - b + c - c - 3, { erkl: "Ohne Klammern Schritt für Schritt von links nach rechts." });
+}
+
+/* ---------- 2.5 Gleichungen ---------- */
+function genGL(o) {
+  var art = o && o.falle ? 2 : zufall(6), x = zw(7, 180), a = zw(9, 250);
+  if (art === 0) return frageZahl("gl", "Löse die Gleichung:<br><b class='gross'>x + " + z(a) + " = " + z(x + a) + "</b>", x, { vor: "x =", erkl: "Umkehraufgabe: x = " + z(x + a) + " − " + z(a) });
+  if (art === 1) return frageZahl("gl", "Löse die Gleichung:<br><b class='gross'>x − " + z(a) + " = " + z(x) + "</b>", x + a, { vor: "x =", erkl: "Umkehraufgabe: x = " + z(x) + " + " + z(a) });
+  if (art === 2) return frageZahl("gl", "Löse die Gleichung:<br><b class='gross'>" + z(x + a) + " − x = " + z(a) + "</b>", x, { vor: "x =", erkl: "x ist der Subtrahend: x = " + z(x + a) + " − " + z(a) });
+  if (art === 3) {
+    var b = zw(20, 60), lsg = zw(5, b - 5), falsch1 = lsg + wahl([2, 3, 4]), falsch2 = Math.max(0, lsg - wahl([2, 3, 5]));
+    return frageWahl("gl", "Welche Zahl ist die <b>Lösung</b> der Gleichung?<br><b class='gross'>" + b + " − x = " + (b - lsg) + "</b>", String(lsg), [String(falsch1), String(falsch2), String(b + (b - lsg))],
+      { erkl: "Probe: " + b + " − " + lsg + " = " + (b - lsg) });
+  }
+  if (art === 4) {
+    var p = zw(20, 90), s1 = zw(100, 300), s2 = zw(20, 90);
+    var r = wahl([["Ich denke mir eine Zahl und addiere sie zu " + p + ". Das Ergebnis ist die Differenz der Zahlen " + (p + x + s2) + " und " + s2 + ".", x],
+      ["Ich denke mir eine Zahl. Wenn ich von ihr " + p + " subtrahiere, erhalte ich die Summe der Zahlen " + s2 + " und " + (x > 60 ? 12 : 30) + ".", p + s2 + (x > 60 ? 12 : 30)],
+      ["Wenn ich meine gedachte Zahl von " + (s1 + x) + " subtrahiere, erhalte ich " + s1 + ".", x]]);
+    return frageZahl("gl", "Zahlenrätsel:<br><b>" + r[0] + "</b><br>Welche Zahl ist gemeint?", r[1], { erkl: "Schreibe zuerst eine Gleichung mit x auf und löse sie mit der Umkehraufgabe." });
+  }
+  var alter = zw(6, 12), diff = zw(2, 6);
+  return frageZahl("gl", "Oskar ist <b>" + diff + " Jahre älter</b> als Pia. Zusammen sind beide <b>" + (2 * alter + diff) + " Jahre</b> alt. Wie alt ist Pia?", alter,
+    { erkl: "Probe: Pia " + alter + ", Oskar " + (alter + diff) + ", zusammen " + (2 * alter + diff) + "." });
+}
+
+/* ---------- 2.6–2.8 Ganze Zahlen addieren und subtrahieren ---------- */
+function ganz(max) { var v = zw(1, max); return zufall(2) ? v : -v; }
+function genGA(o) {
+  var art = o && o.falle ? wahl([1, 1, 2]) : zufall(8), a = ganz(30), b = ganz(30);
+  if (art === 0) return frageZahl("ga", "Berechne:<br><b class='gross'>" + kl(a) + " + " + kl(b) + "</b>", a + b,
+    { erkl: (a < 0) === (b < 0) ? "Gleiche Vorzeichen: Beträge addieren, Vorzeichen behalten." : "Verschiedene Vorzeichen: Beträge subtrahieren, das Vorzeichen des größeren Betrags gewinnt." });
+  if (art === 1) return frageZahl("ga", "Berechne:<br><b class='gross'>" + kl(a) + " − " + kl(b) + "</b>", a - b, { erkl: "Subtrahieren heißt die Gegenzahl addieren: " + kl(a) + " + " + kl(-b) + " = " + z(a - b) });
+  if (art === 2) { a = zw(2, 25); b = a + zw(1, 30); return frageZahl("ga", "Berechne:<br><b class='gross'>" + z(a) + " − " + z(b) + "</b>", a - b, { erkl: "Man geht von " + z(a) + " aus " + z(b) + " Schritte nach links und landet unter null." }); }
+  if (art === 3) {
+    var start = -zw(1, 12), hoch = zw(2, 20);
+    var g = wahl([["Um 6 Uhr zeigt das Thermometer <b>" + z(start) + " °C</b>. Bis zum Mittag steigt die Temperatur um <b>" + hoch + " Grad</b>. Wie viel Grad sind es dann?", start + hoch],
+      ["Am Abend sind es <b>" + z(start + hoch) + " °C</b>. In der Nacht wird es <b>" + (hoch + 3) + " Grad</b> kälter. Wie viel Grad sind es dann?", start - 3],
+      ["Auf dem Konto sind <b>" + z(hoch * 5) + " €</b>. Es werden <b>" + z(hoch * 5 + -start * 10) + " €</b> abgebucht. Wie lautet der neue Kontostand in Euro?", start * 10],
+      ["Der Aufzug steht in Etage <b>" + z(Math.max(start, -4)) + "</b> und fährt <b>" + Math.min(hoch, 9) + " Stockwerke nach oben</b>. In welcher Etage hält er?", Math.max(start, -4) + Math.min(hoch, 9)]]);
+    return frageZahl("ga", g[0], g[1]);
+  }
+  if (art === 4) {
+    var karten = [ganz(9), ganz(9), ganz(9), ganz(9)], summe = karten.reduce(function (s, v) { return s + v; }, 0);
+    return frageZahl("ga", "Punktekarten: Lena hat diese vier Karten auf der Hand. Wie lautet ihr <b>Spielstand</b>?<div class='pkarten'>" + karten.map(function (k) { return "<span class='" + (k < 0 ? "minus" : "plus") + "'>" + vz(k) + "</span>"; }).join("") + "</div>", summe,
+      { erkl: "Tipp: erst alle Pluskarten, dann alle Minuskarten zusammenzählen." });
+  }
+  if (art === 5) {
+    var s0 = ganz(12), schritt = wahl([-7, -5, -4, -3, 3, 4, 6, 8]), folge = [0, 1, 2, 3].map(function (i) { return s0 + i * schritt; });
+    return frageZahl("ga", "Setze die Zahlenreihe fort. Welche Zahl kommt als nächste?<br><b class='gross'>" + folge.map(z).join("; ") + "; …</b>", s0 + 4 * schritt, { erkl: "Regel: immer " + (schritt > 0 ? "+ " : "− ") + Math.abs(schritt) + "." });
+  }
+  if (art === 6) {
+    var u = [ganz(12), ganz(12), ganz(12)], m1 = u[0] + u[1], m2 = u[1] + u[2];
+    return frageZahl("ga", "Zahlenmauer mit ganzen Zahlen: Auf jedem Stein steht die <b>Summe</b> der beiden Steine darunter. Welche Zahl fehlt?" + mauerHtml([[null], [m1, m2], u]), m1 + m2);
+  }
+  var c = ganz(15);
+  return frageZahl("ga", "Berechne von links nach rechts:<br><b class='gross'>" + kl(a) + " + " + kl(b) + " − " + kl(c) + "</b>", a + b - c, { erkl: "Erst " + kl(a) + " + " + kl(b) + " = " + z(a + b) + ", dann − " + kl(c) + "." });
+}
+
+var GEN = { zm: genZM, zs: genZS, gz: genGZ, ru: genRU, go: genGO, fk: genFK, sr: genSR, kt: genKT, gl: genGL, ga: genGA };
+function aufgabe(id, o) { var q = GEN[id](o); q.thema = thema(q.t).titel; return q; }
+function rundeThema(id, n) { var a = []; for (var i = 0; i < (n || 8); i++) a.push(aufgabe(id)); return a; }
+function rundeCheck() { return THEMEN.map(function (t) { return aufgabe(t.id); }); }                       /* je Thema eine Aufgabe */
+function rundeFallen() { return misch(["zm", "gz", "ru", "ru", "go", "go", "fk", "sr", "kt", "gl", "ga", "ga"]).map(function (id) { return aufgabe(id, { falle: true }); }); }
+function rundeProbe() { return ["zm", "zs", "gz", "gz", "ru", "ru", "go", "go", "fk", "sr", "sr", "kt", "kt", "gl", "gl", "ga", "ga", "ga"].map(function (id) { return aufgabe(id); }); }
+
+
+/* üb mal · Mathe Delta 5 – Oberfläche */
+"use strict";
+(function () {
+  var SCHULAUFGABE = new Date(2026, 10, 20);          /* Freitag, 20.11.2026 */
+  var KEY = "uebmal-mathe-delta5-1";
+  var app = document.getElementById("app");
+  var Z = { t: {} };                                    /* je Thema die letzten Ergebnisse (true/false) */
+  function laden() { try { var g = JSON.parse(localStorage.getItem(KEY) || "null"); if (g && g.t) Z = g; } catch (e) {} }
+  function sichern() { try { localStorage.setItem(KEY, JSON.stringify(Z)); } catch (e) {} }
+  function tagNr(d) { return Math.round(new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() / 864e5); }
+  function tageBis() { return tagNr(SCHULAUFGABE) - tagNr(new Date()); }
+  function ohneTags(s) { return String(s).replace(/<svg[\s\S]*?<\/svg>/g, " [Zahlengerade] ").replace(/<div class='(mauer|spalten|pkarten)'[\s\S]*?<\/div>\s*(<\/div>)?/g, " [Bild] ").replace(/<br>/g, " ").replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\s+/g, " ").trim().slice(0, 200); }
+  function h(html) { app.innerHTML = html; window.scrollTo(0, 0); }
+  function klick(sel, fn) { Array.prototype.forEach.call(app.querySelectorAll(sel), function (e) { e.addEventListener("click", function (ev) { ev.preventDefault(); fn(e, ev); }); }); }
+
+  function stand(id) { var a = Z.t[id] || []; return { n: a.length, r: a.filter(Boolean).length }; }
+  function ampel(id) {
+    var s = stand(id); if (!s.n) return "<span class='pille grau'>noch offen</span>";
+    var a = s.r / s.n; return "<span class='pille " + (a >= 0.8 ? "gut" : a >= 0.5 ? "mittel" : "schwach") + "'>" + s.r + " von " + s.n + " richtig</span>";
+  }
+  function schwache() {   /* Themen, die noch offen oder wackelig sind – schwächste zuerst */
+    return THEMEN.map(function (t) { var s = stand(t.id); return { t: t, a: s.n ? s.r / s.n : -1, n: s.n }; })
+      .filter(function (x) { return x.n && x.a < 0.8; }).sort(function (a, b) { return a.a - b.a; }).map(function (x) { return x.t; });
+  }
+
+  /* ---------- Startseite ---------- */
+  function start() {
+    var d = tageBis(), sw = schwache(), geprueft = THEMEN.filter(function (t) { return stand(t.id).n; }).length, s = "", plan;
+    if (d >= 0) {
+      if (d === 0) plan = "Heute ist Schulaufgabe. Viel Erfolg!";
+      else if (!geprueft) plan = "Fang mit dem <b>Schnell-Check</b> an. Er zeigt in zehn Aufgaben, welche Themen schon sitzen.";
+      else if (sw.length) plan = "Als Nächstes lohnt sich: <b>" + sw.slice(0, 2).map(function (t) { return t.titel; }).join("</b> und <b>") + "</b>.";
+      else if (d === 1) plan = "Sieht gut aus. Mach heute noch den <b>Fallen-Parcours</b> und eine <b>Probe-Schulaufgabe</b>. Danach nichts Neues mehr.";
+      else plan = "Sieht gut aus. Probier den <b>Fallen-Parcours</b> und die <b>Probe-Schulaufgabe</b>.";
+      s += "<div class='hinweis'><b>Schulaufgabe am Freitag, 20.11." + (d > 0 ? " – noch " + d + (d === 1 ? " Tag" : " Tage") : "") + "</b><br>" + plan + "</div>";
+    }
+    s += "<div class='raster'><a href='#' class='kachel breit' data-r='check'><span class='f'>Der beste Start · 10 Aufgaben</span><b>Schnell-Check</b><small>Aus jedem Thema eine Aufgabe. Danach weißt du, was du noch üben solltest.</small></a>" +
+      "<a href='#' class='kachel' data-r='fallen'><span class='f'>Bringt am meisten</span><b>Fallen-Parcours</b><small>Die zwölf typischen Stolperstellen aus beiden Kapiteln</small></a>" +
+      "<a href='#' class='kachel' data-r='probe'><span class='f'>Wie in der Schule</span><b>Probe-Schulaufgabe</b><small>18 gemischte Aufgaben mit Auswertung nach Themen</small></a>" +
+      "<a href='#' class='kachel' data-merk='1'><span class='f'>Zum Durchlesen</span><b>Merkzettel</b><small>Das Wichtigste aus Kapitel 1 und 2 auf einen Blick</small></a></div>";
+    [["Kapitel 1: Natürliche und ganze Zahlen", THEMEN.slice(0, 5)], ["Kapitel 2: Addieren und Subtrahieren", THEMEN.slice(5)]].forEach(function (k) {
+      s += "<h2>" + k[0] + "</h2><div class='raster'>" + k[1].map(function (t) {
+        return "<a href='#' class='kachel' data-th='" + t.id + "'><span class='f'>Buch " + t.kap + "</span><b>" + t.titel + "</b><small>" + ampel(t.id) + "</small></a>"; }).join("") + "</div>";
+    });
+    if (geprueft) s += "<p class='leiste'><button class='knopf leise' data-neu='1'>Ampel zurücksetzen</button><span class='klein'>Die Ampel zeigt die letzten zwölf Aufgaben je Thema.</span></p>";
+    h(s);
+    klick("[data-r]", function (e) { sonder(e.dataset.r); });
+    klick("[data-th]", function (e) { themaSeite(e.dataset.th); });
+    klick("[data-merk]", merkzettel);
+    klick("[data-neu]", function () { Z.t = {}; sichern(); start(); });
+  }
+  function sonder(r) {
+    var def = { check: ["Schnell-Check", rundeCheck], fallen: ["Fallen-Parcours", rundeFallen], probe: ["Probe-Schulaufgabe", rundeProbe] }[r];
+    runde({ titel: def[0], modul: r, neu: def[1] });
+  }
+  function merkKasten(t) {
+    return "<div class='karte'><ul class='merk'>" + t.merk.map(function (m) { return "<li>" + m + "</li>"; }).join("") + "</ul><p class='falle'><b>Typische Falle:</b> " + t.falle + "</p></div>";
+  }
+  function themaSeite(id) {
+    var t = thema(id);
+    h("<p><button class='knopf leise' data-heim='1'>← Übersicht</button></p><h2 class='gross'>" + t.titel + "</h2><p class='klein'>Buch Kapitel " + t.kap + " · " + ampel(id) + "</p>" +
+      "<h2>Das musst du wissen</h2>" + merkKasten(t) + "<p class='leiste'><button class='knopf' data-los='1'>Übungsrunde starten (8 Aufgaben)</button></p>");
+    klick("[data-heim]", start);
+    klick("[data-los]", function () { runde({ titel: t.titel, modul: id, zurueck: function () { themaSeite(id); }, neu: function () { return rundeThema(id, 8); } }); });
+  }
+  function merkzettel() {
+    h("<p><button class='knopf leise' data-heim='1'>← Übersicht</button></p><h2 class='gross'>Merkzettel</h2>" + THEMEN.map(function (t) {
+      return "<h2>" + t.titel + " <small class='klein'>Buch " + t.kap + "</small></h2>" + merkKasten(t); }).join(""));
+    klick("[data-heim]", start);
+  }
+
+  /* ---------- Eine Runde ---------- */
+  function runde(def) {
+    var fragen = def.neu(), i = 0, erg = [], beginn = Date.now(), heim = def.zurueck || start;
+    function zeig() {
+      var q = fragen[i];
+      h("<div class='rkopf'><button class='knopf leise' data-ende='1'>Beenden</button><b>" + def.titel + "</b><span class='klein'>" + (i + 1) + " von " + fragen.length + "</span></div>" +
+        "<div class='balken'><i style='width:" + (100 * i / fragen.length) + "%'></i></div>" +
+        "<div class='karte frage'><span class='pille grau'>" + q.thema + "</span><div class='ftext'>" + q.frage + "</div><div id='eingabe'></div><div id='rueck' aria-live='polite'></div></div>");
+      klick("[data-ende]", heim);
+      EINGABE[q.art](q, app.querySelector("#eingabe"), function (ok, gegeben) {
+        erg.push({ q: q, ok: ok, gegeben: gegeben });
+        var a = Z.t[q.t] = (Z.t[q.t] || []).concat([ok]).slice(-12); sichern();
+        var r = app.querySelector("#rueck");
+        r.innerHTML = "<div class='" + (ok ? "gut" : "schlecht") + "'><b>" + (ok ? wahl(["Richtig!", "Genau!", "Stimmt!", "Stark!"]) : "Noch nicht.") + "</b> " +
+          (ok && !q.erkl ? "" : "<span>" + (ok && q.art !== "strahl" ? "" : (q.art === "wahl" ? "Richtig ist: " : q.art === "text" ? "Richtig ist " : "") + q.loesung) + "</span>") +
+          (q.erkl ? "<br><small>" + q.erkl + "</small>" : "") + "</div><button class='knopf' id='weiter'>" + (i + 1 < fragen.length ? "Weiter" : "Zur Auswertung") + "</button>";
+        var w = r.querySelector("#weiter"); w.focus();
+        w.addEventListener("click", function () { i++; i < fragen.length ? zeig() : ende(); });
+      });
+    }
+    function ende() {
+      var richtig = erg.filter(function (e) { return e.ok; }).length, themen = {}, falsch = erg.filter(function (e) { return !e.ok; });
+      erg.forEach(function (e) { var t = themen[e.q.t] = themen[e.q.t] || [0, 0]; t[1]++; if (e.ok) t[0]++; });
+      try {
+        if (window.Uebmal && window.Uebmal.melde) window.Uebmal.melde({ modul: def.modul, titel: def.titel, richtig: richtig, gesamt: erg.length, dauer_s: (Date.now() - beginn) / 1000,
+          fehler: falsch.map(function (e) { return { f: e.q.thema + ": " + ohneTags(e.q.frage), a: String(e.gegeben || "").slice(0, 200), l: ohneTags(e.q.loesung) }; }) });
+      } catch (e) {}
+      var anteil = richtig / erg.length, ueben = Object.keys(themen).filter(function (id) { return themen[id][0] < themen[id][1]; });
+      var s = "<h2 class='gross'>" + def.titel + "</h2><div class='zahlen'><div class='zahl'><b>" + richtig + " von " + erg.length + "</b><span>richtig</span></div>" +
+        "<div class='zahl'><b>" + Math.max(1, Math.round((Date.now() - beginn) / 60000)) + " min</b><span>Dauer</span></div></div>" +
+        "<p>" + (anteil === 1 ? "Alles richtig. Stark!" : anteil >= 0.75 ? "Das sitzt schon gut." : anteil >= 0.5 ? "Guter Anfang. Unten siehst du, was du noch üben kannst." : "Das war schwer. Schau dir die Lösungen unten an und üb die Themen einzeln.") + "</p>";
+      if (Object.keys(themen).length > 1) {
+        s += "<div class='karte'><table><tr><th>Thema</th><th class='n'>richtig</th><th></th></tr>" + Object.keys(themen).map(function (id) {
+          var a = themen[id][0] / themen[id][1];
+          return "<tr><td>" + thema(id).titel + "</td><td class='n'><span class='pille " + (a >= 0.8 ? "gut" : a >= 0.5 ? "mittel" : "schwach") + "'>" + themen[id][0] + " von " + themen[id][1] + "</span></td><td>" +
+            (a < 1 ? "<button class='knopf leise' data-th='" + id + "'>üben</button>" : "") + "</td></tr>"; }).join("") + "</table></div>";
+      }
+      if (falsch.length) s += "<h2>Das schauen wir uns noch einmal an</h2><div class='karte'>" + falsch.map(function (e) {
+        return "<div class='text-eintrag'><div class='frage'>" + e.q.thema + "</div><div class='ftext klein2'>" + e.q.frage + "</div><div><b>Lösung:</b> " + e.q.loesung + (e.q.erkl ? "<br><small class='klein'>" + e.q.erkl + "</small>" : "") + "</div></div>"; }).join("") + "</div>";
+      s += "<p class='leiste'><button class='knopf' data-nochmal='1'>Noch eine Runde</button><button class='knopf leise' data-heim='1'>Zur Übersicht</button></p>";
+      h(s);
+      klick("[data-nochmal]", function () { runde(def); });
+      klick("[data-heim]", heim);
+      klick("[data-th]", function (e) { themaSeite(e.dataset.th); });
+    }
+    zeig();
+  }
+
+  /* ---------- Eingabe-Arten ---------- */
+  var EINGABE = {
+    wahl: function (q, box, fertig) {
+      box.innerHTML = "<div class='opts" + (q.lang ? " lang" : "") + "'>" + q.opts.map(function (o, i) { return "<button class='opt' data-i='" + i + "'>" + o.replace(/</g, "&lt;") + "</button>"; }).join("") + "</div>";
+      var bs = box.querySelectorAll(".opt");
+      Array.prototype.forEach.call(bs, function (b) {
+        b.addEventListener("click", function () {
+          var i = +b.dataset.i;
+          Array.prototype.forEach.call(bs, function (x) { x.disabled = true; });
+          bs[q.ok].classList.add("ok"); if (i !== q.ok) b.classList.add("nein");
+          fertig(i === q.ok, b.textContent);
+        });
+      });
+    },
+    text: function (q, box, fertig) {
+      box.innerHTML = "<form class='tform'>" + (q.vor ? "<label for='ein' class='vor'>" + q.vor + "</label>" : "") +
+        "<input type='text' id='ein' inputmode='text' autocomplete='off' autocapitalize='none' autocorrect='off' spellcheck='false' aria-label='Deine Antwort'>" +
+        "<button class='knopf leise' type='button' id='minus' title='Minuszeichen'>−</button><button class='knopf'>Prüfen</button></form><p class='klein'>Nur die Zahl eintippen. Bei negativen Zahlen ein Minus davor.</p>";
+      var ein = box.querySelector("#ein"); ein.focus();
+      box.querySelector("#minus").addEventListener("click", function () { ein.value = /^[-−]/.test(ein.value) ? ein.value.slice(1) : "−" + ein.value; ein.focus(); });
+      box.querySelector("form").addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var wert = ein.value.trim(); if (!wert) return;
+        if (isNaN(lies(wert))) { ein.classList.add("nein"); box.querySelector("p").textContent = "Das ist keine Zahl. Tippe nur Ziffern ein, zum Beispiel 1250 oder −7."; return; }
+        var ok = lies(wert) === q.zahl;
+        ein.disabled = true; ein.classList.remove("nein"); ein.classList.add(ok ? "ok" : "nein");
+        box.querySelector("form .knopf:not(.leise)").remove(); box.querySelector("#minus").remove();
+        fertig(ok, wert);
+      });
+    },
+    ordnen: function (q, box, fertig) {
+      var gelegt = [], zu = false;
+      box.innerHTML = "<div class='ablage' id='abl'></div><div class='vorrat' id='vor'></div><button class='knopf' id='pruef'>Prüfen</button>";
+      function mal() {
+        box.querySelector("#abl").innerHTML = gelegt.length ? gelegt.map(function (k, n) { return "<button class='wort' data-n='" + n + "'>" + q.karten[k] + "</button>"; }).join(" ") : "<span class='klein'>Tippe unten die Zahlen in der richtigen Reihenfolge an.</span>";
+        box.querySelector("#vor").innerHTML = q.karten.map(function (w, k) { return "<button class='wort' data-k='" + k + "'" + (gelegt.indexOf(k) >= 0 ? " disabled" : "") + ">" + w + "</button>"; }).join(" ");
+        Array.prototype.forEach.call(box.querySelectorAll("#vor .wort"), function (b) { b.addEventListener("click", function () { if (!zu) { gelegt.push(+b.dataset.k); mal(); } }); });
+        Array.prototype.forEach.call(box.querySelectorAll("#abl .wort"), function (b) { b.addEventListener("click", function () { if (!zu) { gelegt.splice(+b.dataset.n, 1); mal(); } }); });
+      }
+      mal();
+      box.querySelector("#pruef").addEventListener("click", function (ev) {
+        if (gelegt.length < q.karten.length) return;
+        zu = true; ev.target.remove();
+        var w = gelegt.map(function (k) { return q.karten[k]; }), ok = w.join("|") === q.ziel.join("|");
+        Array.prototype.forEach.call(box.querySelectorAll(".wort"), function (b) { b.disabled = true; });
+        box.querySelector("#abl").classList.add(ok ? "ok" : "nein");
+        fertig(ok, w.join(" ; "));
+      });
+    },
+    strahl: function (q, box, fertig) {
+      box.innerHTML = strahlSvg(q.strahl) + "<p class='klein'>Tippe auf den passenden Strich.</p>";
+      var felder = box.querySelectorAll(".feld"), zu = false;
+      Array.prototype.forEach.call(felder, function (f) {
+        f.addEventListener("click", function () {
+          if (zu) return; zu = true;
+          var i = +f.dataset.i; felder[q.ok].classList.add("ok"); if (i !== q.ok) f.classList.add("nein");
+          box.querySelector("svg").classList.add("fertig");
+          fertig(i === q.ok, z(q.strahl.min + i * q.strahl.schritt));
+        });
+      });
+    }
+  };
+
+  (window.UEBMAL_SCHUTZ || Promise.resolve(null)).then(function () {
+    if (window.Uebmal && window.Uebmal.user) KEY += "-" + window.Uebmal.user.id;
+    laden(); start();
+  });
+})();
+
+</script>
+</body>
+</html>

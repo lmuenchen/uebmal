@@ -18,7 +18,9 @@
     { id: "mathe-riesenzahlen", fach: "Mathe", stufe: "Klasse 5", titel: "Mission Riesenzahlen",
       text: "Große Zahlen, Runden, Zahlenstrahl, negative Zahlen", pfad: "mathe/" },
     { id: "latein-campus1", fach: "Latein", stufe: "Klasse 5 · Campus B1", titel: "Kapitel 1–9",
-      text: "Vokabeln, Formen, Sätze, Probe-Schulaufgabe", pfad: "latein/" }
+      text: "Vokabeln, Formen, Sätze, Probe-Schulaufgabe", pfad: "latein/" },
+    { id: "mathe-delta5-sa1", fach: "Mathe", stufe: "Klasse 5 · Delta 5", titel: "Schulaufgabe Kapitel 1 und 2",
+      text: "Große Zahlen, Runden, ganze Zahlen, Terme, Gleichungen", pfad: "mathe-delta5/" }
   ];
   /* Konten, die die bisherige (klassische) Oberfläche sehen statt des Abenteuer-Looks */
   var KLASSISCH = ["benedikt", "maria-cristina"];
